@@ -32,12 +32,15 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String mailStr="\"zhao_chen@topsec.com.cn\" <zhao_chen@topsec.com.cn>,shiminhui <shiminhui@han-networks.com>,li_xuesheng@topsec.com.cn,<qian_peng@topsec.com.cn>";
+//        String mailStr="\"zhao_chen@topsec.com.cn\" <zhao_chen@topsec.com.cn>,shiminhui <shiminhui@han-networks.com>,li_xuesheng@topsec.com.cn,<qian_peng@topsec.com.cn>";
+//
+//        /*String str = "tencent.sf.gg@10000@qq.comghghghghg\n" +
+//                "你好leveychen，lev；levey-chen@myema你aaa@this.gov.cn好il.gmail.com悲" +
+//                "剧help@admin.sf.gg了" +
+//                "啊m@levey.com.cnmnihao的都是</br>和<sf@sf.gggame@google.com>";*/
+//        System.out.println(getEmailList(mailStr));
 
-        /*String str = "tencent.sf.gg@10000@qq.comghghghghg\n" +
-                "你好leveychen，lev；levey-chen@myema你aaa@this.gov.cn好il.gmail.com悲" +
-                "剧help@admin.sf.gg了" +
-                "啊m@levey.com.cnmnihao的都是</br>和<sf@sf.gggame@google.com>";*/
-        System.out.println(getEmailList(mailStr));
+        //System.out.println("abc,vvv,,".replaceAll(",$",""));
+        System.out.println(String.format("%s/%s","hello","vb"));
     }
 }
