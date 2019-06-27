@@ -1,5 +1,7 @@
 package com.magic.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +42,6 @@ public class Main {
 //                "啊m@levey.com.cnmnihao的都是</br>和<sf@sf.gggame@google.com>";*/
 //        System.out.println(getEmailList(mailStr));
 
-        //System.out.println("abc,vvv,,".replaceAll(",$",""));
-        System.out.println(String.format("%s/%s","hello","vb"));
+
     }
 }

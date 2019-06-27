@@ -349,30 +349,15 @@ public class SNMPUtils {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-
-        SNMPUtils snmpUtils = new SNMPUtils("192.167.2.120",161,SnmpConstants.version2c,"public");
-
-        //get-request
-        //snmpGet("1.3.6.1.2.1.1.4.0");//sysContact(系统联系人)
-
-        //getBulk-request
-        //snmpGetBulk("1.3.6.1.2.1.1");
-
-        //set-request
-        //snmpSet(new OID("1.3.6.1.2.1.1.4.0"), new VariantVariable());
-
-        //getNext-request
-        //snmpWalk(new OID("1.3.6.1.2.1.2.2.1.2"), SNMPUtils.ROOT);//IfDescr(网络接口信息描述)
-
-        //report
-
-        //inform-request
-
-        //trap
-
-        //get-response
-        snmpGetResponse(false, true, "1.3.6.1.2.1.1.4.0");//sysContact(系统联系人)
-
+    public void destory(){
+        if(snmp!=null){
+            try {
+                snmp.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
+
 }
