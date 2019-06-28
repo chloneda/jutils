@@ -15,10 +15,10 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 /**
- * <p>ClassName: GetOID<p>
+ * <p>ClassName: SNMPDemo<p>
  * <p>Description:获得本机的信息 <p>
  */
-public class GetOID {
+public class SNMPDemo {
 
     public static void main(String[] args) throws Exception{
 

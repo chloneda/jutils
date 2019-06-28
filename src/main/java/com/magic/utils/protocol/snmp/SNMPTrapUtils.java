@@ -1,188 +1,109 @@
 package com.magic.utils.protocol.snmp;
 
-import org.snmp4j.CommunityTarget;
-import org.snmp4j.PDU;
-import org.snmp4j.PDUv1;
-import org.snmp4j.SNMP4JSettings;
-import org.snmp4j.ScopedPDU;
-import org.snmp4j.Snmp;
-import org.snmp4j.TransportMapping;
-import org.snmp4j.UserTarget;
-import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.*;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.Priv3DES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.security.USM;
-import org.snmp4j.security.UsmUser;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.UdpAddress;
-import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.security.*;
+import org.snmp4j.smi.*;
+import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.MultiThreadedMessageDispatcher;
+import org.snmp4j.util.ThreadPool;
 
 import java.io.IOException;
+import java.util.Vector;
 
 /**
  * Created by chloneda
  * Description:
+ *      SNMP Trap多线程接收解析信息
  */
-public class SNMPTrapUtils {
+public class SNMPTrapUtils implements CommandResponder {
 
+    private static TransportMapping<UdpAddress> transport = null;
+    private MultiThreadedMessageDispatcher dispatcher;
     private Snmp snmp = null;
+    private Address listenAddress;
+    private ThreadPool threadPool;
 
-    private Address targetAddress = null;
-
-    private TransportMapping<UdpAddress> transport = null;
-
-    private String username = "user1";
-    private String authPassword = "password1";
-    private String privPassword = "password2";
+    private int version;
+    private String host;
+    private int port;
+    private String community;
 
 
-    public static void main(String[] args) {
-        SNMPTrapUtils poc = new SNMPTrapUtils();
+    public SNMPTrapUtils(String host, int port, int version, String community) {
+        this.host = host;
+        this.port = port;
+        this.version = version;
+        this.community = community;
 
         try {
-            poc.init();
-            System.out.println(poc.sendV2cTrap().getResponse());
-//            poc.sendV2cTrap();
-//            poc.sendV3TrapNoAuthNoPriv();
-//            poc.sendV3Auth();
+            listen();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        snmp.addCommandResponder(this);
+        System.out.println("---- Trap Receiver 开始监听端口，等待Trap message  ----");
     }
 
-
-    public void init() throws IOException {
-        targetAddress = GenericAddress.parse("udp:192.167.2.120/162");
-        transport = new DefaultUdpTransportMapping();
-        snmp = new Snmp(transport);
-        transport.listen();
-    }
-
-    public ResponseEvent sendV1Trap() throws IOException {
-        PDUv1 pdu = new PDUv1();
-        VariableBinding v = new VariableBinding();
-        v.setOid(SnmpConstants.sysName);
-        v.setVariable(new OctetString("Snmp Trap V1 Test"));
-        pdu.add(v);
-        pdu.setType(PDU.V1TRAP);
-
-// set target
-        CommunityTarget target = new CommunityTarget();
-        target.setCommunity(new OctetString("public"));
-        target.setAddress(targetAddress);
-// retry times when commuication error
-        target.setRetries(2);
-// timeout
-        target.setTimeout(1500);
-        target.setVersion(SnmpConstants.version1);
-// send pdu, return response
-        return snmp.send(pdu, target);
-    }
-
-    public ResponseEvent sendV2cTrap() throws IOException {
-        PDU pdu = new PDU();
-        VariableBinding v = new VariableBinding();
-        v.setOid(SnmpConstants.sysName);
-        v.setVariable(new OctetString("Snmp Trap V2 Test"));
-        pdu.add(v);
-        pdu.setType(PDU.TRAP);
-        // set target
-        CommunityTarget target = new CommunityTarget();
-        target.setCommunity(new OctetString("public"));
-        target.setAddress(targetAddress);
-
-        // retry times when commuication error
-        target.setRetries(2);
-        target.setTimeout(1500);
-        target.setVersion(SnmpConstants.version2c);
-        // send pdu, return response
-        return snmp.send(pdu, target);
-    }
-
-
-    public ResponseEvent sendV3TrapNoAuthNoPriv() throws IOException {
-        SNMP4JSettings.setExtensibilityEnabled(true);
-        SecurityProtocols.getInstance().addDefaultProtocols();
-
-        UserTarget target = new UserTarget();
-        target.setVersion(SnmpConstants.version3);
-
-        try {
-            transport = new DefaultUdpTransportMapping();
-        } catch (IOException e1) {
-            e1.printStackTrace();
+    private void listen() throws IOException {
+        threadPool = ThreadPool.create("SnmpTrap", 3);
+        dispatcher = new MultiThreadedMessageDispatcher(threadPool, new MessageDispatcherImpl());
+        //listenAddress = GenericAddress.parse("udp:" + host + "/" + port);
+        listenAddress = new UdpAddress(host + "/" + port);
+        TransportMapping transport;
+        if (listenAddress instanceof UdpAddress) {
+            transport = new DefaultUdpTransportMapping((UdpAddress) listenAddress);
+        } else {
+            transport = new DefaultTcpTransportMapping((TcpAddress) listenAddress);
         }
+        snmp = new Snmp(dispatcher, transport);
+        snmp.getMessageDispatcher().addMessageProcessingModel(new MPv1());
+        snmp.getMessageDispatcher().addMessageProcessingModel(new MPv2c());
+        snmp.getMessageDispatcher().addMessageProcessingModel(new MPv3());
 
-        byte[] enginId = "TEO_ID".getBytes();
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(
-                enginId), 500);
-        SecurityModels secModels = SecurityModels.getInstance();
-        if (snmp.getUSM() == null) {
-            secModels.addSecurityModel(usm);
-        }
-
-        target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
-        target.setAddress(targetAddress);
-
-        ScopedPDU pdu = new ScopedPDU();
-        pdu.setType(PDU.NOTIFICATION);
-        VariableBinding v = new VariableBinding();
-        v.setOid(SnmpConstants.sysName);
-        v.setVariable(new OctetString("Snmp Trap V3 Test"));
-        pdu.add(v);
-
-        snmp.setLocalEngine(enginId, 500, 1);
-        return snmp.send(pdu, target);
-    }
-
-    public ResponseEvent sendV3Auth() throws IOException {
-        SNMP4JSettings.setExtensibilityEnabled(true);
-        SecurityProtocols.getInstance().addDefaultProtocols();
-
-        UserTarget target = new UserTarget();
-        target.setSecurityName(new OctetString(username));
-        target.setVersion(SnmpConstants.version3);
-
-        try {
-            transport = new DefaultUdpTransportMapping();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-
-        byte[] enginId = "TEO_ID".getBytes();
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(
-                enginId), 500);
-        SecurityModels secModels = SecurityModels.getInstance();
-        synchronized (secModels) {
-            if (snmp.getUSM() == null) {
-                secModels.addSecurityModel(usm);
-            }
-
+        if (version == SnmpConstants.version3) {
+            USM usm = new USM(
+                    SecurityProtocols.getInstance().addDefaultProtocols(),
+                    new OctetString(MPv3.createLocalEngineID()), 0);
+            usm.setEngineDiscoveryEnabled(true);
+            SecurityModels.getInstance().addSecurityModel(usm);
 
             snmp.getUSM().addUser(
-                    new OctetString(username),
-                    new OctetString(enginId),
-                    new UsmUser(new OctetString(username), AuthMD5.ID,
-                            new OctetString(authPassword), Priv3DES.ID,
-                            new OctetString(privPassword)));
-            target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
-            target.setAddress(targetAddress);
-            ScopedPDU pdu = new ScopedPDU();
-            pdu.setType(PDU.NOTIFICATION);
-            VariableBinding v = new VariableBinding();
-            v.setOid(SnmpConstants.sysName);
-            v.setVariable(new OctetString("Snmp Trap V3 Test"));
-            pdu.add(v);
-            snmp.setLocalEngine(enginId, 500, 1);
-            return snmp.send(pdu, target);
+                    new OctetString("snmpuser"),
+                    new UsmUser(new OctetString("snmpuser"), AuthMD5.ID,
+                            new OctetString("auth123456"), PrivDES.ID,
+                            new OctetString("priv123456")));
+
+            SecurityModels.getInstance().addSecurityModel(usm);
         }
+
+        snmp.listen();
     }
 
+
+    @Override
+    public void processPdu(CommandResponderEvent event) {
+        System.out.println("---- 开始解析ResponderEvent ----");
+        if (event == null || event.getPDU() == null) {
+            System.out.println("ResponderEvent or PDU is null!");
+            return;
+        }
+        Vector<? extends VariableBinding> vbs = event.getPDU().getVariableBindings();
+        for (VariableBinding vb : vbs) {
+            String key=vb.getOid().toString();
+            String value=vb.getVariable().toString();
+            System.out.println(key + " = " + value);
+        }
+        System.out.println("---- 结束 ResponderEvent 解析 ----");
+    }
+
+    public static void main(String[] args) {
+        SNMPTrapUtils trapReceiver = new SNMPTrapUtils(
+                "192.167.2.120", 1623, SnmpConstants.version3, "public");
+    }
+    
 }

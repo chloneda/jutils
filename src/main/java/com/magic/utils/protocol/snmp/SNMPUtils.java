@@ -12,13 +12,7 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.security.USM;
-import org.snmp4j.security.UsmUser;
+import org.snmp4j.security.*;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
@@ -53,6 +47,15 @@ public class SNMPUtils {
     private static int version;
     private static String community;
     private static Target target;
+
+    private static String securityName="snmpuser";
+    private static String authPassword="auth123456";
+    private static String privPassword="priv123456";
+    private static String privProtocol="DES";
+    private static String authProtocol="MD5";
+    private static int securityLevel=SecurityLevel.AUTH_PRIV;
+    private static OID priProtocolBean;
+    private static OID authProtocolBean;
 
     public SNMPUtils(String host) {
         this(host, 161);
@@ -98,19 +101,22 @@ public class SNMPUtils {
         Address targetAddress = new UdpAddress(host + "/" + port);
 
         if (version == SnmpConstants.version3) {
+            setPriProtocolBean(privProtocol);
+            setAuthProtocolBean(authProtocol);
             // 添加用户
-            snmp.getUSM().addUser(new OctetString("public")
+            snmp.getUSM().addUser(new OctetString(securityName)
                     , new UsmUser(
-                            new OctetString("public")
-                            , AuthMD5.ID
-                            , new OctetString("authPassword")
-                            , PrivDES.ID
-                            , new OctetString("privPassword")));
+                            new OctetString(securityName)
+                            , authProtocolBean
+                            , new OctetString(authPassword)
+                            , priProtocolBean
+                            , new OctetString(privPassword)));
             target = new UserTarget();
             // 设置安全级别 NOAUTH_NOPRIV AUTH_NOPRIV AUTH_PRIV
-            target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
-            target.setSecurityName(new OctetString("public"));
-            target.setVersion(SnmpConstants.version3);//设置snmp的版本号
+            target.setSecurityLevel(securityLevel);
+            target.setSecurityName(new OctetString(securityName));
+            //设置snmp的版本号
+            target.setVersion(SnmpConstants.version3);
         } else {
             target = new CommunityTarget();
             if (version == SnmpConstants.version1) {
@@ -126,6 +132,29 @@ public class SNMPUtils {
         target.setAddress(targetAddress);
         target.setRetries(3);//设置重试次数
         target.setTimeout(1000);
+    }
+
+    private static void setPriProtocolBean(String privProtocol) {
+        if (privProtocol.equalsIgnoreCase("des"))
+            priProtocolBean = PrivDES.ID;
+        else if (privProtocol.equalsIgnoreCase("aes128")
+                || privProtocol.equalsIgnoreCase("aes"))
+            priProtocolBean = PrivAES128.ID;
+        else if (privProtocol.equalsIgnoreCase("aes192"))
+            priProtocolBean = PrivAES192.ID;
+        else if (privProtocol.equalsIgnoreCase("aes256"))
+            priProtocolBean = PrivAES256.ID;
+        else
+            priProtocolBean = null;
+    }
+
+    private static void setAuthProtocolBean(String authProtocol) {
+        if (authProtocol.equalsIgnoreCase("md5"))
+            authProtocolBean = AuthMD5.ID;
+        else if (authProtocol.equalsIgnoreCase("sha"))
+            authProtocolBean = AuthSHA.ID;
+        else
+            authProtocolBean = null;
     }
 
     /**
@@ -148,6 +177,7 @@ public class SNMPUtils {
             default:
                 pdu = new PDU();
         }
+        pdu.setType(pduType);
         return pdu;
     }
 
@@ -210,18 +240,18 @@ public class SNMPUtils {
 
     // getBulk操作会根据最大重试值执行一个连续的GETNEXT操作。该操作常用于查询数据量较大的场景，可以提高效率
     // 非中继值决定要进行GETNEXT操作的变量列表中的变量数，对于剩下的变量，将根据最大重试值进行连续GETNEXT操作。
-    public static void snmpGetBulk( String rootOID) throws IOException {
+    public static void snmpGetBulk(String rootOID) throws IOException {
         datas=new HashMap<String, String>();
         PDU request = createPDU(PDU.GETBULK);
         //getBulk操作,一定要指定MaxRepetitions，默认值是0，那样不会返回任何结(must set it,default is 0)
         request.setMaxRepetitions(10);//每次返回條數
-        request.setNonRepeaters(2);// 標量個數 //標量在前 矢量在後
-        request.add(new VariableBinding(new OID()));
+        request.setNonRepeaters(2);// 标量个数 //标量在前 矢量在后
+        request.add(new VariableBinding(new OID(rootOID)));
         //ResponseEvent rspEvt = snmp.send(request, target);
         ResponseEvent rspEvt = snmp.getBulk(request, target);
         PDU response = rspEvt.getResponse();
         if (null != response && response.getErrorIndex() == PDU.noError && response.getErrorStatus() == PDU.noError) {
-            String curr_oid = null;
+            String currOid = null;
             //循环数据桶
             for (VariableBinding variable : response.getVariableBindings()) {
                 // String syn = variable.getVariable().getSyntaxString();//节点数据类型
@@ -230,15 +260,15 @@ public class SNMPUtils {
                     String value = variable.getVariable().toString();
                     datas.put(key.replace(rootOID, ""), value);
                     System.out.println("Snmp getBulk-request operation and the data is :{} " + datas);
-                    curr_oid = variable.getOid().toString();
+                    currOid = variable.getOid().toString();
                 } else {
                     return;
                 }
             }
-            if (null == curr_oid) {
+            if (null == currOid) {
                 return;
             }
-            snmpGetBulk(curr_oid);
+            snmpGetBulk(currOid);
         }
     }
 
@@ -255,8 +285,8 @@ public class SNMPUtils {
         datas=new HashMap<String, String>();
         PDU pdu = createPDU(PDU.GETNEXT);
         pdu.add(new VariableBinding(oid));
-        //ResponseEvent rspEvt = snmp.send(pdu, target);
-        ResponseEvent rspEvt = snmp.getNext(pdu, target);
+        ResponseEvent rspEvt = snmp.send(pdu, target);
+        //ResponseEvent rspEvt = snmp.getNext(pdu, target);
         PDU response = rspEvt.getResponse();
 
         if (response.getErrorIndex() == PDU.noError && response.getErrorStatus() == PDU.noError) {
@@ -298,6 +328,28 @@ public class SNMPUtils {
         } else {
             throw new Exception("Error info :{} " + response.getErrorStatusText());
         }
+    }
+
+    public static ResponseEvent sendSnmpTrap(String oid) throws IOException {
+        return sendSnmpTrap(Arrays.asList(oid));
+    }
+
+    //support snmp v1|v2c|v3
+    public static ResponseEvent sendSnmpTrap(List<String> oids) throws IOException {
+        PDU pdu ;
+        if(version==SnmpConstants.version1)
+            pdu=createPDU(PDU.V1TRAP);
+        else
+            pdu=createPDU(PDU.TRAP);
+
+        for (String oid : oids) {
+            if (oid.endsWith(".0")) {
+                pdu.add(new VariableBinding(new OID(oid),new OctetString("SNMP Trap Test.")));
+            } else {
+                throw new IllegalArgumentException(oid + ": 为MIB中非叶子节点，请检查！");
+            }
+        }
+        return snmp.set(pdu,target);
     }
 
     public static void snmpGetResponse(Boolean syn, final Boolean bro, String oid) throws IOException {
