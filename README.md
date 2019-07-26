@@ -1,2 +1,2 @@
-# utils
-tools for java
+# jutils
+jutils,Generic Java tool class
