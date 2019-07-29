@@ -14,21 +14,21 @@ public class ZipUtilTest {
     @Test
     public void testCompress() throws IOException {
         //将目标目录的文件压缩成Zip文件
-        String targetDirPath = "/opt/tmpdir/zipFolder";
-        String newZipFilePath = "/opt/tmpdir/new.zip";
+        String srcDirPath = "D:/opt/share/zipFolder";
+        String dstZipFilePath = "D:/opt/share/new.zip";
 
-        ZipUtil.compress(targetDirPath , newZipFilePath);
+        ZipUtil.compress(srcDirPath , dstZipFilePath);
     }
 
     @Test
     public void testDecompress() throws IOException {
         //将Zip文件解压缩到目标目录
-        String targetDirPath = "/opt/tmpdir/zipFolder";
-        String newZipFilePath = "/opt/tmpdir/new.zip";
-        Objects.nonNull(targetDirPath);
-        Objects.requireNonNull(newZipFilePath);
+        String zipFilePath = "D:/opt/share/new.zip";
+        String targetDirPath = "D:/opt/share/";
+        Objects.requireNonNull(targetDirPath);
+        Objects.requireNonNull(zipFilePath);
 
-        ZipUtil.decompress(newZipFilePath , targetDirPath);
+        ZipUtil.decompress(zipFilePath , targetDirPath);
     }
 
 }

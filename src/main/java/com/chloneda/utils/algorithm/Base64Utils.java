@@ -28,9 +28,9 @@ public class Base64Utils {
         return str;
     }
 
-    public static String decode(String str){
-        Base64.decodeBase64(str);
-    }
+//    public static String decode(String str){
+//        Base64.decodeBase64(str);
+//    }
 
     public static void encode(String str){
         //Base64.encodeBase64();

@@ -9,13 +9,19 @@ import java.util.zip.*;
  * Description:
  */
 public class ZipUtil {
-    static final int BUFFER = 8192;
+    private static final int BUFFER = 8192;
+    private static final String ZIP_FILE_EXTENSION = ".zip";
 
-    public static void compress(String srcPath , String dstPath) throws IOException{
+    /**
+     * 压缩文件
+     * @param srcPath 压缩文件或目录
+     * @param dstPath 压缩目标路径
+     */
+    public static void compress(String srcPath , String dstPath){
         File srcFile = new File(srcPath);
         File dstFile = new File(dstPath);
-        if (!srcFile.exists()) {
-            throw new FileNotFoundException(srcPath + "不存在！");
+        if (!dstFile.exists()) {
+            dstFile.mkdirs();
         }
 
         FileOutputStream out = null;
@@ -26,31 +32,40 @@ public class ZipUtil {
             zipOut = new ZipOutputStream(cos);
             String baseDir = "";
             compress(srcFile, zipOut, baseDir);
-        }
-        finally {
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
             if(null != zipOut){
-                zipOut.close();
-                out = null;
+                try {
+                    zipOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-
             if(null != out){
-                out.close();
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    private static void compress(File file, ZipOutputStream zipOut, String baseDir) throws IOException{
-        if (file.isDirectory()) {
-            compressDirectory(file, zipOut, baseDir);
-        } else {
+    private static void compress(File file, ZipOutputStream zipOut, String baseDir){
+        if (file.isDirectory())
+            compressDir(file, zipOut, baseDir);
+        else
             compressFile(file, zipOut, baseDir);
-        }
     }
 
     /**
-     * 压缩一个目录
+     * 压缩目录
+     * @param dir
+     * @param zipOut
+     * @param baseDir
      */
-    private static void compressDirectory(File dir, ZipOutputStream zipOut, String baseDir) throws IOException{
+    private static void compressDir(File dir, ZipOutputStream zipOut, String baseDir){
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             compress(files[i], zipOut, baseDir + dir.getName() + "/");
@@ -58,9 +73,12 @@ public class ZipUtil {
     }
 
     /**
-     * 压缩一个文件
+     * 压缩文件
+     * @param file
+     * @param zipOut
+     * @param baseDir
      */
-    private static void compressFile(File file, ZipOutputStream zipOut, String baseDir)  throws IOException {
+    private static void compressFile(File file, ZipOutputStream zipOut, String baseDir){
         if (!file.exists()){
             return;
         }
@@ -75,26 +93,40 @@ public class ZipUtil {
             while ((count = bis.read(data, 0, BUFFER)) != -1) {
                 zipOut.write(data, 0, count);
             }
-
-        }finally {
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
             if(null != bis){
-                bis.close();
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public static void decompress(String zipFile , String dstPath)throws IOException{
+    /**
+     * 解压文件
+     * @param zipFile zip文件
+     * @param dstPath 解压路径
+     */
+    public static void decompress(String zipFile , String dstPath){
         File pathFile = new File(dstPath);
         if(!pathFile.exists()){
             pathFile.mkdirs();
         }
-        ZipFile zip = new ZipFile(zipFile);
-        for(Enumeration entries = zip.entries(); entries.hasMoreElements();){
-            ZipEntry entry = (ZipEntry)entries.nextElement();
-            String zipEntryName = entry.getName();
-            InputStream in = null;
-            OutputStream out = null;
-            try{
+
+        InputStream in = null;
+        OutputStream out = null;
+        try{
+            ZipFile zip = new ZipFile(zipFile);
+            for(Enumeration entries = zip.entries(); entries.hasMoreElements();){
+                ZipEntry entry = (ZipEntry)entries.nextElement();
+                String zipEntryName = entry.getName();
+
                 in =  zip.getInputStream(entry);
                 String outPath = (dstPath+"/"+zipEntryName).replaceAll("\\*", "/");;
                 //判断路径是否存在,不存在则创建文件路径
@@ -106,24 +138,34 @@ public class ZipUtil {
                 if(new File(outPath).isDirectory()){
                     continue;
                 }
-
                 out = new FileOutputStream(outPath);
                 byte[] buf1 = new byte[1024];
                 int len;
-                while((len=in.read(buf1))>0){
-                    out.write(buf1,0,len);
+                while((len=in.read(buf1))>0) {
+                    out.write(buf1, 0, len);
                 }
-            } finally {
-                if(null != in){
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(null != in){
+                try {
                     in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            }
 
-                if(null != out){
+            if(null != out){
+                try {
                     out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
-
 
 }
