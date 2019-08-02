@@ -1,4 +1,4 @@
-package com.chloneda.utils;
+package com.chloneda.utils.commons;
 
 import com.chloneda.utils.regex.multiregex.MultiPattern;
 import com.chloneda.utils.regex.multiregex.MultiPatternMatcher;

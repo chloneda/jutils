@@ -1,4 +1,4 @@
-package com.magic.utils;
+package com.chloneda.utils.commons;
 
 import org.apache.commons.lang3.StringUtils;
 
