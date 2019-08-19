@@ -63,6 +63,15 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
+
+        <!-- Apache Commons Net库包含一组网络实用程序和协议实现。
+              支持的协议包括：Echo,Finger,FTP,NNTP,NTP,POP3(S),SMTP(S),Telnet,Whois -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.6</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
         <dependency>
             <groupId>commons-codec</groupId>
