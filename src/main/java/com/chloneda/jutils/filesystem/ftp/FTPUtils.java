@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +62,33 @@ public class FTPUtils implements AbstractFTP {
         return flag;
     }
 
+    //通过FTP响应码判断是否操作成功
+    public boolean reply(String operation) {
+        int replyCode = client.getReplyCode();
+        FTPLogger log = new FTPLogger();
+        log.setHost(vo.getHostName());
+        log.setOperation(operation);
+        log.setLocalFile("");
+        log.setRemoteFile("");
+        log.setReplyCode(replyCode);
+        log.setReplyCodeDesc(FTPConstant.REPLY_CODE.get(replyCode));
+        logger.info(JacksonUtil.toJson(log));
+        return FTPReply.isPositiveCompletion(replyCode);
+    }
+
+    public boolean reply(String operation, String localFile, String remoteFile) {
+        int replyCode = client.getReplyCode();
+        FTPLogger log = new FTPLogger();
+        log.setHost(vo.getHostName());
+        log.setOperation(operation);
+        log.setLocalFile(localFile);
+        log.setRemoteFile(remoteFile);
+        log.setReplyCode(replyCode);
+        log.setReplyCodeDesc(FTPConstant.REPLY_CODE.get(replyCode));
+        logger.info(JacksonUtil.toJson(log));
+        return FTPReply.isPositiveCompletion(replyCode);
+    }
+
     @Override
     public boolean isExists(String fileName) {
         List<String> list = listFile(vo.getRemoteBaseDir());
@@ -71,12 +100,33 @@ public class FTPUtils implements AbstractFTP {
 
     @Override
     public boolean downloadFile(String fileName) {
-        return false;
+        String localfileName = vo.getLocalDir() + File.separator + fileName;
+        FileUtil.createFiles(localfileName);
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(localfileName, true);
+            client.retrieveFile(new String(fileName.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"), out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return reply("DOWNLOAD", localfileName, fileName);
     }
 
     @Override
     public boolean downloadDir(String directory) {
-        return false;
+        List<String> files = listFile(directory);
+        for (String fileName : files) {
+            downloadFile(fileName);
+        }
+        return true;
     }
 
     @Override
