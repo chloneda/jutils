@@ -1,6 +1,8 @@
 package com.chloneda.jutils.filesystem.ftp;
 
 import com.chloneda.jutils.commons.AssertUtils;
+import com.chloneda.jutils.java.io.FileUtils;
+import com.chloneda.jutils.json.JacksonUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
@@ -72,7 +74,7 @@ public class FTPUtils implements AbstractFTP {
         log.setRemoteFile("");
         log.setReplyCode(replyCode);
         log.setReplyCodeDesc(FTPConstant.REPLY_CODE.get(replyCode));
-        logger.info(JacksonUtil.toJson(log));
+        logger.info(JacksonUtils.toJson(log));
         return FTPReply.isPositiveCompletion(replyCode);
     }
 
@@ -85,7 +87,7 @@ public class FTPUtils implements AbstractFTP {
         log.setRemoteFile(remoteFile);
         log.setReplyCode(replyCode);
         log.setReplyCodeDesc(FTPConstant.REPLY_CODE.get(replyCode));
-        logger.info(JacksonUtil.toJson(log));
+        logger.info(JacksonUtils.toJson(log));
         return FTPReply.isPositiveCompletion(replyCode);
     }
 
@@ -101,7 +103,7 @@ public class FTPUtils implements AbstractFTP {
     @Override
     public boolean downloadFile(String fileName) {
         String localfileName = vo.getLocalDir() + File.separator + fileName;
-        FileUtil.createFiles(localfileName);
+        FileUtils.createFiles(localfileName);
         OutputStream out = null;
         try {
             out = new FileOutputStream(localfileName, true);

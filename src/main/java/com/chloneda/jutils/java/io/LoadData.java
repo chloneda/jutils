@@ -1,4 +1,4 @@
-package com.chloneda.jutils.jdk.io;
+package com.chloneda.jutils.java.io;
 
 import java.io.*;
 import java.nio.file.Paths;
