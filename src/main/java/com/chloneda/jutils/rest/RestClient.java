@@ -1,6 +1,6 @@
 package com.chloneda.jutils.rest;
 
-import com.chloneda.jutils.commons.StringFormater;
+import com.chloneda.jutils.commons.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.io.*;
@@ -45,7 +45,7 @@ public class RestClient {
             connection.setRequestProperty("accept", this.contentTypeForXml);
             if (data != null && !data.isEmpty()) {
                 connection.setRequestProperty("Content-Type",
-                        StringFormater.format("{}; charset={}", new Object[]{this.contentTypeForXml, this.charset}));
+                        StringUtils.format("{}; charset={}", new Object[]{this.contentTypeForXml, this.charset}));
             }
 
             this.fillRequestProperties(connection, requestProperties);
@@ -72,7 +72,7 @@ public class RestClient {
         } else if (method.equalsIgnoreCase(REQUEST_METHOD_DELETE)) {
             return REQUEST_METHOD_DELETE;
         } else {
-            throw new IllegalArgumentException(StringFormater.format("Unsupport request method '{}'!", new Object[]{method}));
+            throw new IllegalArgumentException(StringUtils.format("Unsupport request method '{}'!", new Object[]{method}));
         }
     }
 
@@ -105,10 +105,7 @@ public class RestClient {
 
             }
         } else {
-
-
-
-            sbuf.append(StringFormater.format("http status code : {}\n", new Object[]{connection.getResponseCode()}));
+            sbuf.append(StringUtils.format("http status code : {}\n", new Object[]{connection.getResponseCode()}));
             sbuf.append(connection.getResponseMessage());
         }
 

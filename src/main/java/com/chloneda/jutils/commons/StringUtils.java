@@ -7,13 +7,28 @@ import java.util.Map;
  * Created by chloneda
  * Description:
  */
-public class StringFormater {
+public class StringUtils {
     static final char DELIM_START = '{';
     static final char DELIM_STOP = '}';
     static final String DELIM_STR = "{}";
     private static final char ESCAPE_CHAR = '\\';
 
-    public StringFormater() {
+    public StringUtils(){}
+
+    public static String replaceEach(String text, String[] searchList, String[] replaceList) {
+        return org.apache.commons.lang3.StringUtils.replaceEach(text, searchList, replaceList);
+    }
+
+    public static String replace(String text,String[] replaceList){
+        return String.format(text,replaceList);
+    }
+
+    public static boolean isEmpty(CharSequence cs) {
+        return cs == null || cs.length() == 0;
+    }
+
+    public static boolean isNotEmpty(CharSequence cs) {
+        return !isEmpty(cs);
     }
 
     public static final String format(String messagePattern, Object... argArray) {

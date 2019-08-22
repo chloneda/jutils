@@ -17,14 +17,14 @@
     </properties>
 
     <dependencies>
-        <!--SNMP协议依赖-->
+        <!--SNMP protocol-->
         <dependency>
             <groupId>org.snmp4j</groupId>
             <artifactId>snmp4j</artifactId>
             <version>2.6.3</version>
         </dependency>
 
-        <!--读取excel文件-->
+        <!--excel-->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -36,14 +36,14 @@
             <version>3.17</version>
         </dependency>
 
-        <!-- Java日志框架 -->
+        <!-- log -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
         </dependency>
 
-        <!-- mysql驱动 -->
+        <!-- mysql driver -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -84,14 +84,14 @@
             <version>1.19</version>
         </dependency>
 
-        <!-- 常用工具类 -->
+        <!-- commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <!-- commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -106,34 +106,33 @@
             <version>3.6</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <!-- commons-codec -->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+
+        <!-- commons-collections -->
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.2</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/commons-dbutils/commons-dbutils -->
+
+        <!-- commons-dbutils -->
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
             <version>1.7</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.apache.commons</groupId>-->
-        <!--<artifactId>commons-csv</artifactId>-->
-        <!--<version>1.5</version>-->
-        <!--</dependency>-->
+
         <dependency>
             <groupId>net.sourceforge.javacsv</groupId>
             <artifactId>javacsv</artifactId>
             <version>2.0</version>
         </dependency>
+
         <!-- 多模式正则匹配 -->
         <dependency>
             <groupId>dk.brics.automaton</groupId>
@@ -141,7 +140,6 @@
             <version>1.11-8</version>
         </dependency>
 
-        <!-- Java 测试框架 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -149,12 +147,10 @@
             <scope>test</scope>
         </dependency>
 
-
     </dependencies>
 
     <build>
         <plugins>
-            <!-- java编译插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

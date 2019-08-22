@@ -1,6 +1,6 @@
 package com.chloneda.jutils.filesystem.ftp;
 
-import com.chloneda.jutils.commons.AssertUtils;
+import com.chloneda.jutils.commons.CheckUtils;
 import com.chloneda.jutils.java.io.FileUtils;
 import com.chloneda.jutils.json.JacksonUtils;
 import org.apache.commons.net.ftp.FTPClient;
@@ -228,7 +228,7 @@ public class FTPUtils implements AbstractFTP {
 
     @Override
     public void destory() {
-        if (AssertUtils.notNull(client)) {
+        if (CheckUtils.notNull(client)) {
             try {
                 client.disconnect();
             } catch (IOException e) {
