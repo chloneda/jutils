@@ -13,14 +13,15 @@ public class StringUtils {
     static final String DELIM_STR = "{}";
     private static final char ESCAPE_CHAR = '\\';
 
-    public StringUtils(){}
+    public StringUtils() {
+    }
 
     public static String replaceEach(String text, String[] searchList, String[] replaceList) {
         return org.apache.commons.lang3.StringUtils.replaceEach(text, searchList, replaceList);
     }
 
-    public static String replace(String text,String[] replaceList){
-        return String.format(text,replaceList);
+    public static String replace(String text, String[] replaceList) {
+        return String.format(text, replaceList);
     }
 
     public static boolean isEmpty(CharSequence cs) {
@@ -29,6 +30,25 @@ public class StringUtils {
 
     public static boolean isNotEmpty(CharSequence cs) {
         return !isEmpty(cs);
+    }
+
+    public static boolean isBlank(CharSequence cs) {
+        int strLen;
+        if (cs != null && (strLen = cs.length()) != 0) {
+            for (int i = 0; i < strLen; ++i) {
+                if (!Character.isWhitespace(cs.charAt(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean isNotBlank(CharSequence cs) {
+        return !isBlank(cs);
     }
 
     public static final String format(String messagePattern, Object... argArray) {

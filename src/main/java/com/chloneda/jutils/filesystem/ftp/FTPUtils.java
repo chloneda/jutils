@@ -9,14 +9,10 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by chloneda
@@ -133,37 +129,79 @@ public class FTPUtils implements AbstractFTP {
 
     @Override
     public boolean deleteFile(String fileName) {
+        if (isExists(fileName)) {
+            try {
+                client.deleteFile(new String(fileName.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+                return reply("DELETE", "", fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return false;
     }
 
     @Override
     public boolean deleteDir(String directory) {
-        return false;
+        List<String> files = listFile(directory);
+        try {
+            for (String s : files) {
+                deleteFile(s);
+            }
+            List<String> dirs = listDir(directory);
+            for (int i = dirs.size() - 1; i >= 0; i--) {
+                client.removeDirectory(new String(dirs.get(i).getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+            }
+            client.removeDirectory(new String(directory.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return reply("DELETE", "", directory);
     }
 
     @Override
     public boolean putFile(String fileName, String remoteFileName, boolean isDelete) {
-        return false;
+        File file = new File(fileName);
+        return putFile(file, remoteFileName, isDelete);
     }
 
     @Override
     public boolean putFile(File file, String remoteFileName, boolean isDelete) {
+        String fileName = remoteFileName;
+        String path = "";
+        String parent = getParentPath(remoteFileName);
+        if (remoteFileName.lastIndexOf("/") != -1) {
+            path = remoteFileName.substring(0, remoteFileName.lastIndexOf("/"));
+            fileName = remoteFileName.substring(remoteFileName.lastIndexOf("/") + 1);
+            mkDir(path);
+            changeWorkDir(path);
+        }
+        try (InputStream in = new FileInputStream(file)) {
+            if (isDelete) {
+                deleteFile(new String(file.getName().getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+            }
+            client.appendFile(new String(fileName.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"), in);
+            return reply("UPLOAD", file.getAbsoluteFile().toString(), remoteFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean putDir(String fileName, String remoteDir) {
-        return false;
+        File file = new File(fileName);
+        return putDir(file, remoteDir);
     }
 
     @Override
     public boolean putDir(File file, String remoteDir) {
-        return false;
-    }
-
-    @Override
-    public boolean mkDir(String destory) {
-        return false;
+        List<File> list = FileUtils.listFile(file);
+        for (File f : list) {
+            String name = f.getAbsolutePath();
+            name = name.substring(name.indexOf(file.getName())).replaceAll("\\\\", "/");
+            putFile(f, remoteDir + "/" + name, true);
+        }
+        return true;
     }
 
     @Override
@@ -186,13 +224,27 @@ public class FTPUtils implements AbstractFTP {
     }
 
     @Override
-    public LinkedList<String> listDir(String direcotyr) {
-        return null;
-    }
-
-    @Override
     public Map<String, FTPFileAttr> listFileAttr(String directory) {
-        return null;
+        Map<String, FTPFileAttr> map = new HashMap<String, FTPFileAttr>();
+        try {
+            FTPFile[] files = client.listFiles(directory);
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isFile()) {
+                    FTPFile file = files[i];
+                    String fileName = directory + file.getName();
+                    FTPFileAttr attr = new FTPFileAttr();
+                    attr.setFileName(fileName);
+                    attr.setLastModifiedTime(file.getTimestamp().getTime());
+                    attr.setSize(file.getSize());
+                    map.put(fileName, attr);
+                } else if (files[i].isDirectory()) {
+                    map.putAll(listFileAttr(directory + files[i].getName() + "/"));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     @Override
@@ -217,8 +269,58 @@ public class FTPUtils implements AbstractFTP {
     }
 
     @Override
+    public boolean mkDir(String directory) {
+        directory = directory.replaceAll("//", "/");
+        if (directory.startsWith("/")) {
+            directory = directory.substring(1);
+        }
+        if (directory.endsWith("/")) {
+            directory = directory.substring(0, directory.length() - 1);
+        }
+        try {
+            String[] str = (new String(directory.getBytes(vo.getRemoteEncoding()), "ISO-8859-1")).split("/");
+            String t = "";
+            String parnet = "";
+            for (int i = 0; i < str.length; i++) {
+                t += ("/" + str[i]);
+                if (!isExists(t.substring(1))) {
+                    client.makeDirectory(str[i]);
+                }
+                client.changeWorkingDirectory(str[i]);
+                parnet += "../";
+            }
+            if (str.length >= 1) {
+                client.changeWorkingDirectory(parnet);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    @Override
     public boolean changName(String oldName, String newName) {
         return false;
+    }
+
+    @Override
+    public LinkedList<String> listDir(String directory) {
+        LinkedList<String> list = new LinkedList<String>();
+        try {
+            FTPFile[] files = client.listFiles(directory);
+            for (int i = 0; i < files.length; i++) {
+                String t = (directory + "/" + files[i].getName()).replaceAll("//", "/");
+                if (files[i].isDirectory()) {
+                    list.add(t);
+                    list.addAll(listDir(t + "/"));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     @Override
@@ -235,5 +337,33 @@ public class FTPUtils implements AbstractFTP {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    private String getParentPath(String file) {
+        if (file.indexOf("/") != -1) {
+            String temp = null;
+            Pattern p = Pattern.compile("[/]+");
+            Matcher m = p.matcher(file);
+            int i = 0;
+            while (m.find()) {
+                temp = m.group(0);
+                i += temp.length();
+            }
+            String parent = "";
+            for (int j = 0; j < i; j++) {
+                parent += "../";
+            }
+            return parent;
+        } else {
+            return "./";
+        }
+    }
+
+    private String getRelativePath(File path) {
+        String path1 = path.getPath();
+        String path2 = path.getAbsolutePath();
+        return null;
+
     }
 }

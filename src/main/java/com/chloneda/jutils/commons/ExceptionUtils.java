@@ -5,4 +5,6 @@ package com.chloneda.jutils.commons;
  * Description:
  */
 public class ExceptionUtils {
+    private ExceptionUtils() {
+    }
 }

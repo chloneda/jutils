@@ -4,10 +4,8 @@ package com.chloneda.jutils.filesystem.hdfs;
  * Created by chloneda
  * Description:
  */
-public class HdfsUtils {
+public class HdfsVo {
 
-    public HdfsUtils(){
-
-    }
+    private String remoteBaseDir;
 
 }

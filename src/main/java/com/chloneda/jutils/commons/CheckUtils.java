@@ -1,12 +1,17 @@
 package com.chloneda.jutils.commons;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by chloneda@gmail.com
  * Description: 提供先决条件判断、对象有效性校验的工具类
  */
 public class CheckUtils {
+
+    private CheckUtils() {
+    }
 
     public static boolean equals(Object a, Object b) {
         return (a == b) || (a != null && a.equals(b));
@@ -28,6 +33,96 @@ public class CheckUtils {
 
     public static boolean notNull(Object obj) {
         return obj != null;
+    }
+
+    public static <T extends CharSequence> T notBlank(T chars, String message, Object... values) {
+        if (chars == null) {
+            throw new NullPointerException(String.format(message, values));
+        } else if (StringUtils.isBlank(chars)) {
+            throw new IllegalArgumentException(String.format(message, values));
+        } else {
+            return chars;
+        }
+    }
+
+    public static <T extends CharSequence> T notBlank(T chars) {
+        return notBlank(chars, "The character sequence is blank !");
+    }
+
+    public static boolean isEmpty(Object... objs) {
+        if (objs == null || objs.length == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isNotEmpty(Object... objs) {
+        return !isEmpty(objs);
+    }
+
+    public static boolean isAnyEmpty(Object... objs) {
+        for (Object obj : objs) {
+            if (isNull(obj)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static <T> T[] notEmpty(T[] array, String message, Object... values) {
+        if (array == null) {
+            throw new NullPointerException(String.format(message, values));
+        } else if (array.length == 0) {
+            throw new IllegalArgumentException(String.format(message, values));
+        } else {
+            return array;
+        }
+    }
+
+    public static <T> T[] notEmpty(T[] array) {
+        return notEmpty(array, "The array is empty !");
+    }
+
+    public static <T extends Collection<?>> T notEmpty(T collection, String message, Object... values) {
+        if (collection == null) {
+            throw new NullPointerException(String.format(message, values));
+        } else if (collection.isEmpty()) {
+            throw new IllegalArgumentException(String.format(message, values));
+        } else {
+            return collection;
+        }
+    }
+
+    public static <T extends Collection<?>> T notEmpty(T collection) {
+        return notEmpty(collection, "The collection is empty !");
+    }
+
+    public static <T extends Map<?, ?>> T notEmpty(T map, String message, Object... values) {
+        if (map == null) {
+            throw new NullPointerException(String.format(message, values));
+        } else if (map.isEmpty()) {
+            throw new IllegalArgumentException(String.format(message, values));
+        } else {
+            return map;
+        }
+    }
+
+    public static <T extends Map<?, ?>> T notEmpty(T map) {
+        return notEmpty(map, "The map is empty !");
+    }
+
+    public static <T extends CharSequence> T notEmpty(T chars, String message, Object... values) {
+        if (chars == null) {
+            throw new NullPointerException(String.format(message, values));
+        } else if (chars.length() == 0) {
+            throw new IllegalArgumentException(String.format(message, values));
+        } else {
+            return chars;
+        }
+    }
+
+    public static <T extends CharSequence> T notEmpty(T chars) {
+        return notEmpty(chars, "The character sequence is empty !");
     }
 
     public static void isTrue(boolean expression) {

@@ -1,9 +1,13 @@
 package com.chloneda.jutils.java.io;
 
+import com.chloneda.jutils.commons.CheckUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by chloneda
@@ -86,6 +90,72 @@ public class FileUtils {
             return file.delete();
         }
         return false;
+    }
+
+    /**
+     * 罗列指定路径下的全部文件
+     *
+     * @param path 需要处理的文件
+     * @return 包含所有文件的的list
+     */
+    public final static List<File> listFile(String path) {
+        File file = new File(path);
+        return listFile(file);
+    }
+
+    /**
+     * 罗列指定路径下的全部文件
+     *
+     * @param path  需要处理的文件
+     * @param child 是否罗列子文件
+     * @return 包含所有文件的的list
+     */
+    public final static List<File> listFile(String path, boolean child) {
+        return listFile(new File(path), child);
+    }
+
+
+    /**
+     * 罗列指定路径下的全部文件
+     *
+     * @param path 需要处理的文件
+     * @return 返回文件列表
+     */
+    public final static List<File> listFile(File path) {
+        List<File> list = new ArrayList<>();
+        File[] files = path.listFiles();
+        if (CheckUtils.isNotEmpty(files)) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(listFile(file));
+                } else {
+                    list.add(file);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 罗列指定路径下的全部文件
+     *
+     * @param path  指定的路径
+     * @param child 是否罗列子目录
+     * @return
+     */
+    public final static List<File> listFile(File path, boolean child) {
+        List<File> list = new ArrayList<>();
+        File[] files = path.listFiles();
+        if (CheckUtils.isNotEmpty(files)) {
+            for (File file : files) {
+                if (child && file.isDirectory()) {
+                    list.addAll(listFile(file));
+                } else {
+                    list.add(file);
+                }
+            }
+        }
+        return list;
     }
 
 

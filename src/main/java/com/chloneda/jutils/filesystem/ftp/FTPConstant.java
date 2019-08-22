@@ -12,10 +12,10 @@ public class FTPConstant {
      * FTP状态码及其描述
      */
     public static Map<Integer, String> REPLY_CODE = new HashMap<Integer, String>();
-    
+
     //用于编码转换
     private static String ISO_ECODING = "ISO-8859-1";
-    
+
     //程序运行的编码
     private static String PROJECT_ENCODING = "UTF_8";
 

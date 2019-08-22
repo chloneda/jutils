@@ -1,4 +1,4 @@
-package com.chloneda.jutils.filesystem.ftp;
+package com.chloneda.jutils.filesystem.hdfs;
 
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by chloneda
  * Description:FTP抽象工具类
  */
-public interface AbstractFTP {
+public interface AbstractHdfs {
     //判断远程文件是否存在
     public boolean isExists(String fileName);
 
@@ -49,7 +49,7 @@ public interface AbstractFTP {
     public LinkedList<String> listDir(String direcotyr);
 
     //获取远程文件属性以Map形式返回
-    public Map<String, FTPFileAttr> listFileAttr(String directory);
+    public Map<String, HdfsFileAttr> listFileAttr(String directory);
 
     //改变FTP连接的工作目录
     public boolean changeWorkDir(String directory);
