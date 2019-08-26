@@ -6,7 +6,10 @@ import java.util.Map;
 
 /**
  * Created by chloneda@gmail.com
- * Description: 提供先决条件判断、对象有效性校验的工具类
+ * Description:
+ *  提供功能:
+ *      1、先决条件判断(not)
+ *      2、对象有效性校验(is)
  */
 public class CheckUtils {
 
@@ -35,6 +38,20 @@ public class CheckUtils {
         return obj != null;
     }
 
+    public static <T> T requireNotNull(T obj) {
+        if (obj == null) {
+            throw new NullPointerException();
+        }
+        return obj;
+    }
+
+    public static <T> T requireNotNull(T obj, String message) {
+        if (obj == null) {
+            throw new NullPointerException(message);
+        }
+        return obj;
+    }
+
     public static <T extends CharSequence> T notBlank(T chars, String message, Object... values) {
         if (chars == null) {
             throw new NullPointerException(String.format(message, values));
@@ -47,6 +64,14 @@ public class CheckUtils {
 
     public static <T extends CharSequence> T notBlank(T chars) {
         return notBlank(chars, "The character sequence is blank !");
+    }
+
+    public static boolean isEmpty(CharSequence cs) {
+        return cs == null || cs.length() == 0;
+    }
+
+    public static boolean isNotEmpty(CharSequence cs) {
+        return !isEmpty(cs);
     }
 
     public static boolean isEmpty(Object... objs) {
@@ -67,6 +92,16 @@ public class CheckUtils {
             }
         }
         return false;
+    }
+
+    public static void notEmpty(String string, String message) {
+        if (string == null || string.length() == 0) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void notEmpty(String string) {
+        notEmpty(string, "The string is empty !");
     }
 
     public static <T> T[] notEmpty(T[] array, String message, Object... values) {
@@ -157,20 +192,6 @@ public class CheckUtils {
         } else {
             return String.format("%s (%s) must not be greater than size (%s)", message, index, size);
         }
-    }
-
-    public static <T> T requireNotNull(T obj) {
-        if (obj == null) {
-            throw new NullPointerException();
-        }
-        return obj;
-    }
-
-    public static <T> T requireNotNull(T obj, String message) {
-        if (obj == null) {
-            throw new NullPointerException(message);
-        }
-        return obj;
     }
 
 }

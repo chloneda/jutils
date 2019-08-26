@@ -1,0 +1,60 @@
+package com.chloneda.jutils.elasticsearch;
+
+import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.Map;
+
+/**
+ * Created by chloneda
+ * Description:
+ */
+public class EsConfig implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static final String DEFAULT_ES_CLUSTER_NAME = "elasticsearch";
+
+    private String clusterName;
+
+    /**
+     * 自动嗅探,设置为true,将自动嗅探整个集群,自动加入集群的节点到连接列表中。
+     */
+    private boolean isSniff = false;
+
+    private String host;
+
+    private int port;
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
+    }
+
+    public boolean isSniff() {
+        return isSniff;
+    }
+
+    public void setSniff(boolean sniff) {
+        isSniff = sniff;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+}

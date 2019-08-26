@@ -1,5 +1,7 @@
 package com.chloneda.jutils.filesystem.ftp;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * Created by chloneda
  * Description: 包装FTP的连接基本信息
@@ -13,6 +15,8 @@ public class FTPVo {
     private String localDir;
     private String remoteEncoding;
     private boolean passiveMode;
+    //其他配置参数
+    private JSONObject conf;
 
     public FTPVo(String hostName, int port, String username, String password, String remoteBaseDir, String localDir,
                  String remoteEncoding, boolean passiveMode) {

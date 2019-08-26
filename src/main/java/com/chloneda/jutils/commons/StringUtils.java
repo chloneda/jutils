@@ -32,6 +32,24 @@ public class StringUtils {
         return !isEmpty(cs);
     }
 
+    public static boolean isAnyEmpty(CharSequence... css) {
+        if (css == null || css.length == 0) {
+            return true;
+        } else {
+            CharSequence[] arr$ = css;
+            int len$ = css.length;
+
+            for (int i$ = 0; i$ < len$; ++i$) {
+                CharSequence cs = arr$[i$];
+                if (isEmpty(cs)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     public static boolean isBlank(CharSequence cs) {
         int strLen;
         if (cs != null && (strLen = cs.length()) != 0) {
@@ -49,6 +67,19 @@ public class StringUtils {
 
     public static boolean isNotBlank(CharSequence cs) {
         return !isBlank(cs);
+    }
+
+    public static String trim(String str) {
+        return str == null ? null : str.trim();
+    }
+
+    public static String trimToNull(String str) {
+        String tmpStr;
+        return isEmpty(tmpStr = trim(str)) ? null : tmpStr;
+    }
+
+    public static String trimToEmpty(String str) {
+        return str == null ? "" : trim(str);
     }
 
     public static final String format(String messagePattern, Object... argArray) {
@@ -268,4 +299,5 @@ public class StringUtils {
 
         sbuf.append(']');
     }
+
 }

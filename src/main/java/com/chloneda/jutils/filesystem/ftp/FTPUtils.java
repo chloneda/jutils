@@ -26,7 +26,7 @@ public class FTPUtils implements AbstractFTP {
     private boolean login = false;
 
 
-    public FTPUtils(FTPVo vo) throws IOException {
+    public FTPUtils(FTPVo vo) {
         this.vo = vo;
         login = initFTPClien(vo);
     }
