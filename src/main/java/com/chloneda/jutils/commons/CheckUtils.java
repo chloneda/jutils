@@ -7,9 +7,9 @@ import java.util.Map;
 /**
  * Created by chloneda@gmail.com
  * Description:
- *  提供功能:
- *      1、先决条件判断(not)
- *      2、对象有效性校验(is)
+ * 提供功能:
+ * 1、先决条件判断(not)
+ * 2、对象有效性校验(is)
  */
 public class CheckUtils {
 
@@ -34,22 +34,49 @@ public class CheckUtils {
         return obj == null;
     }
 
-    public static boolean notNull(Object obj) {
+    public static boolean isNotNull(Object obj) {
         return obj != null;
     }
 
-    public static <T> T requireNotNull(T obj) {
-        if (obj == null) {
-            throw new NullPointerException();
-        }
-        return obj;
+    public static <T extends Collection<?>> boolean isEmpty(T col) {
+        return col == null || col.isEmpty();
     }
 
-    public static <T> T requireNotNull(T obj, String message) {
-        if (obj == null) {
-            throw new NullPointerException(message);
+    public static <T extends Collection<?>> boolean isEmpty(T... cols) {
+        return cols == null || cols.length == 0;
+    }
+
+    public static <T extends Map<?, ?>> boolean isEmpty(T map) {
+        return !(map == null || map.isEmpty());
+    }
+
+    public static <T extends Map<?, ?>> boolean isEmpty(T... maps) {
+        return maps == null || maps.length == 0;
+    }
+
+    public static boolean isEmpty(CharSequence cs) {
+        return cs == null || cs.length() == 0;
+    }
+
+    public static boolean isNotEmpty(CharSequence cs) {
+        return !isEmpty(cs);
+    }
+
+    public static boolean isEmpty(Object... objs) {
+        return objs == null || objs.length == 0;
+    }
+
+    public static boolean isNotEmpty(Object... objs) {
+        return !isEmpty(objs);
+    }
+
+    public static boolean isAnyEmpty(Object... objs) {
+        for (Object obj : objs) {
+            if (isNull(obj)) {
+                return true;
+            }
         }
-        return obj;
+        return false;
     }
 
     public static <T extends CharSequence> T notBlank(T chars, String message, Object... values) {
@@ -66,42 +93,29 @@ public class CheckUtils {
         return notBlank(chars, "The character sequence is blank !");
     }
 
-    public static boolean isEmpty(CharSequence cs) {
-        return cs == null || cs.length() == 0;
-    }
-
-    public static boolean isNotEmpty(CharSequence cs) {
-        return !isEmpty(cs);
-    }
-
-    public static boolean isEmpty(Object... objs) {
-        if (objs == null || objs.length == 0) {
-            return true;
+    public static <T> T requireNotNull(T obj) {
+        if (obj == null) {
+            throw new NullPointerException();
         }
-        return false;
+        return obj;
     }
 
-    public static boolean isNotEmpty(Object... objs) {
-        return !isEmpty(objs);
-    }
-
-    public static boolean isAnyEmpty(Object... objs) {
-        for (Object obj : objs) {
-            if (isNull(obj)) {
-                return true;
-            }
+    public static <T> T requireNotNull(T obj, String message) {
+        if (obj == null) {
+            throw new NullPointerException(message);
         }
-        return false;
+        return obj;
     }
 
-    public static void notEmpty(String string, String message) {
+    public static String notEmpty(String string, String message) {
         if (string == null || string.length() == 0) {
             throw new IllegalArgumentException(message);
         }
+        return string;
     }
 
-    public static void notEmpty(String string) {
-        notEmpty(string, "The string is empty !");
+    public static String notEmpty(String string) {
+        return notEmpty(string, "The string is empty !");
     }
 
     public static <T> T[] notEmpty(T[] array, String message, Object... values) {

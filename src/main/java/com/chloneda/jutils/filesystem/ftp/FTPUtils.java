@@ -330,7 +330,7 @@ public class FTPUtils implements AbstractFTP {
 
     @Override
     public void destory() {
-        if (CheckUtils.notNull(client)) {
+        if (CheckUtils.isNull(client)) {
             try {
                 client.disconnect();
             } catch (IOException e) {
