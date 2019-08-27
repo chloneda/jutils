@@ -20,14 +20,14 @@ import java.util.regex.Pattern;
  */
 public class FTPUtils implements AbstractFTP {
 
-    private Logger logger = LoggerFactory.getLogger(FTPUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FTPUtils.class);
     private FTPClient client;
     private FTPVo vo;
     private boolean login = false;
 
 
     public FTPUtils(FTPVo vo) {
-        this.vo = vo;
+        vo = vo;
         login = initFTPClien(vo);
     }
 

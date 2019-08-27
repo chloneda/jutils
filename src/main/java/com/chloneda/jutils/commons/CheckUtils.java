@@ -42,16 +42,32 @@ public class CheckUtils {
         return col == null || col.isEmpty();
     }
 
+    public static <T extends Collection<?>> boolean isNotEmpty(T col) {
+        return !isEmpty(col);
+    }
+
     public static <T extends Collection<?>> boolean isEmpty(T... cols) {
         return cols == null || cols.length == 0;
     }
 
+    public static <T extends Collection<?>> boolean isNotEmpty(T... cols) {
+        return !isEmpty(cols);
+    }
+
     public static <T extends Map<?, ?>> boolean isEmpty(T map) {
-        return !(map == null || map.isEmpty());
+        return map == null || map.isEmpty();
+    }
+
+    public static <T extends Map<?, ?>> boolean isNotEmpty(T map) {
+        return !isEmpty(map);
     }
 
     public static <T extends Map<?, ?>> boolean isEmpty(T... maps) {
         return maps == null || maps.length == 0;
+    }
+
+    public static <T extends Map<?, ?>> boolean isNotEmpty(T... maps) {
+        return !isEmpty(maps);
     }
 
     public static boolean isEmpty(CharSequence cs) {
@@ -77,6 +93,24 @@ public class CheckUtils {
             }
         }
         return false;
+    }
+
+    public static <T extends CharSequence> boolean isBlank(T cs) {
+        int strLen;
+        if (cs != null && (strLen = cs.length()) != 0) {
+            for (int i = 0; i < strLen; ++i) {
+                if (!Character.isWhitespace(cs.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean isNotBlank(CharSequence cs) {
+        return !isBlank(cs);
     }
 
     public static <T extends CharSequence> T notBlank(T chars, String message, Object... values) {

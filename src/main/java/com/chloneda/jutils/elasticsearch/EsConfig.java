@@ -25,6 +25,10 @@ public class EsConfig implements Serializable {
 
     private int port;
 
+    private int restPort;
+
+    private String indexName;
+
     public String getClusterName() {
         return clusterName;
     }
@@ -55,6 +59,22 @@ public class EsConfig implements Serializable {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public int getRestPort() {
+        return restPort;
+    }
+
+    public void setRestPort(int restPort) {
+        this.restPort = restPort;
+    }
+
+    public String getIndexName() {
+        return indexName;
+    }
+
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
     }
 
 }
