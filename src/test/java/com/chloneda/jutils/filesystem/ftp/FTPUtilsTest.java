@@ -11,11 +11,12 @@ import java.io.IOException;
  * Description:
  */
 public class FTPUtilsTest {
-    FTPUtils ftpUtils;
+    private FTPUtils ftpUtils;
 
     @Before
     public void init() throws IOException {
-        FTPVo ftpVo=new FTPVo("192.167.2.120",
+        FTPConfig ftpConfig =new FTPConfig(
+                "192.167.2.120",
                 21,
                 "vsftpd",
                 "vsftpd",
@@ -23,7 +24,7 @@ public class FTPUtilsTest {
                 "/opt",
                 "GBK",
                 true);
-        ftpUtils=new FTPUtils(ftpVo);
+        ftpUtils=new FTPUtils(ftpConfig);
     }
 
     @Test

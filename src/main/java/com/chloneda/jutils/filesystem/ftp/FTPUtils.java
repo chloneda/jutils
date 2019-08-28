@@ -22,36 +22,36 @@ public class FTPUtils implements AbstractFTP {
 
     private static final Logger logger = LoggerFactory.getLogger(FTPUtils.class);
     private FTPClient client;
-    private FTPVo vo;
+    private FTPConfig ftpConfig;
     private boolean login = false;
 
 
-    public FTPUtils(FTPVo vo) {
-        vo = vo;
-        login = initFTPClien(vo);
+    public FTPUtils(FTPConfig ftpConfig) {
+        this.ftpConfig = ftpConfig;
+        login = initFTPClien(ftpConfig);
     }
 
-    private synchronized boolean initFTPClien(FTPVo vo) {
+    private synchronized boolean initFTPClien(FTPConfig ftpConfig) {
         client = new FTPClient();
         boolean flag = true;
         int reply = -1;
         try {
-            client.connect(vo.getHostName(), vo.getPort());
-            client.login(vo.getUsername(), vo.getPassword());
+            client.connect(ftpConfig.getHostName(), ftpConfig.getPort());
+            client.login(ftpConfig.getUsername(), ftpConfig.getPassword());
             reply = client.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
                 client.disconnect();
                 flag = false;
                 return flag;
             }
-            if (vo.isPassiveMode()) {
+            if (ftpConfig.isPassiveMode()) {
                 client.enterLocalPassiveMode();
             } else {
                 client.enterRemotePassiveMode();
             }
-            client.setControlEncoding(vo.getRemoteEncoding());
+            client.setControlEncoding(ftpConfig.getRemoteEncoding());
             client.setFileType(FTPClient.BINARY_FILE_TYPE);
-            client.cwd(vo.getRemoteBaseDir());
+            client.cwd(ftpConfig.getRemoteBaseDir());
             return flag;
         } catch (IOException e) {
             flag = false;
@@ -64,32 +64,32 @@ public class FTPUtils implements AbstractFTP {
     public boolean reply(String operation) {
         int replyCode = client.getReplyCode();
         FTPLogger log = new FTPLogger();
-        log.setHost(vo.getHostName());
+        log.setHost(ftpConfig.getHostName());
         log.setOperation(operation);
         log.setLocalFile("");
         log.setRemoteFile("");
         log.setReplyCode(replyCode);
         log.setReplyCodeDesc(FTPConstant.REPLY_CODE.get(replyCode));
-        logger.info(JacksonUtils.toJson(log));
+        logger.info("FTPLogger:{} " + JacksonUtils.toJson(log));
         return FTPReply.isPositiveCompletion(replyCode);
     }
 
     public boolean reply(String operation, String localFile, String remoteFile) {
         int replyCode = client.getReplyCode();
         FTPLogger log = new FTPLogger();
-        log.setHost(vo.getHostName());
+        log.setHost(ftpConfig.getHostName());
         log.setOperation(operation);
         log.setLocalFile(localFile);
         log.setRemoteFile(remoteFile);
         log.setReplyCode(replyCode);
         log.setReplyCodeDesc(FTPConstant.REPLY_CODE.get(replyCode));
-        logger.info(JacksonUtils.toJson(log));
+        logger.info("FTPLogger:{} " + JacksonUtils.toJson(log));
         return FTPReply.isPositiveCompletion(replyCode);
     }
 
     @Override
     public boolean isExists(String fileName) {
-        List<String> list = listFile(vo.getRemoteBaseDir());
+        List<String> list = listFile(ftpConfig.getRemoteBaseDir());
         if (list != null && list.contains(fileName)) {
             return true;
         }
@@ -98,12 +98,12 @@ public class FTPUtils implements AbstractFTP {
 
     @Override
     public boolean downloadFile(String fileName) {
-        String localfileName = vo.getLocalDir() + File.separator + fileName;
+        String localfileName = ftpConfig.getLocalDir() + File.separator + fileName;
         FileUtils.createFiles(localfileName);
         OutputStream out = null;
         try {
             out = new FileOutputStream(localfileName, true);
-            client.retrieveFile(new String(fileName.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"), out);
+            client.retrieveFile(new String(fileName.getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1"), out);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -131,7 +131,7 @@ public class FTPUtils implements AbstractFTP {
     public boolean deleteFile(String fileName) {
         if (isExists(fileName)) {
             try {
-                client.deleteFile(new String(fileName.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+                client.deleteFile(new String(fileName.getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1"));
                 return reply("DELETE", "", fileName);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -149,9 +149,9 @@ public class FTPUtils implements AbstractFTP {
             }
             List<String> dirs = listDir(directory);
             for (int i = dirs.size() - 1; i >= 0; i--) {
-                client.removeDirectory(new String(dirs.get(i).getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+                client.removeDirectory(new String(dirs.get(i).getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1"));
             }
-            client.removeDirectory(new String(directory.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+            client.removeDirectory(new String(directory.getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -177,9 +177,9 @@ public class FTPUtils implements AbstractFTP {
         }
         try (InputStream in = new FileInputStream(file)) {
             if (isDelete) {
-                deleteFile(new String(file.getName().getBytes(vo.getRemoteEncoding()), "ISO-8859-1"));
+                deleteFile(new String(file.getName().getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1"));
             }
-            client.appendFile(new String(fileName.getBytes(vo.getRemoteEncoding()), "ISO-8859-1"), in);
+            client.appendFile(new String(fileName.getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1"), in);
             return reply("UPLOAD", file.getAbsoluteFile().toString(), remoteFileName);
         } catch (IOException e) {
             e.printStackTrace();
@@ -278,7 +278,7 @@ public class FTPUtils implements AbstractFTP {
             directory = directory.substring(0, directory.length() - 1);
         }
         try {
-            String[] str = (new String(directory.getBytes(vo.getRemoteEncoding()), "ISO-8859-1")).split("/");
+            String[] str = (new String(directory.getBytes(ftpConfig.getRemoteEncoding()), "ISO-8859-1")).split("/");
             String t = "";
             String parnet = "";
             for (int i = 0; i < str.length; i++) {

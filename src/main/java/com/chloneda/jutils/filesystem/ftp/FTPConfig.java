@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
  * Created by chloneda
  * Description: 包装FTP的连接基本信息
  */
-public class FTPVo {
+public class FTPConfig {
     private String hostName;
     private int port;
     private String username;
@@ -18,8 +18,8 @@ public class FTPVo {
     //其他配置参数
     private JSONObject conf;
 
-    public FTPVo(String hostName, int port, String username, String password, String remoteBaseDir, String localDir,
-                 String remoteEncoding, boolean passiveMode) {
+    public FTPConfig(String hostName, int port, String username, String password, String remoteBaseDir, String localDir,
+                     String remoteEncoding, boolean passiveMode) {
         this.hostName = hostName;
         this.port = port;
         this.remoteBaseDir = remoteBaseDir;

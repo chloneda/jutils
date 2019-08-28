@@ -11,8 +11,7 @@ import java.util.Set;
  * Created by chloneda
  * Description:
  */
-public class ElasticSearchUtilsTest {
-    private ElasticSearchUtils elasticSearchUtils;
+public class ElasticsearchUtilsTest {
     private TransportClient client;
 
     @Before
@@ -22,20 +21,25 @@ public class ElasticSearchUtilsTest {
         esConfig.setPort(9300);
         esConfig.setSniff(false);
         esConfig.setClusterName("elastic");
-        elasticSearchUtils = new ElasticSearchUtils(esConfig);
-        client = elasticSearchUtils.getClient();
+        client = ElasticsearchUtils.createClient(esConfig);
     }
 
     @Test
     public void testGetAllIndices() {
-        Set set=elasticSearchUtils.getAllIndices();
-        System.out.println("All index:{} "+set);
+        Set set = ElasticsearchUtils.getAllIndices();
+        System.out.println("All index:{} " + set);
     }
 
     @Test
-    public void testIsExitIndice(){
-        boolean exit=elasticSearchUtils.isExitIndice("chl_test");
-        System.out.println("The index is exit:{} "+ exit);
+    public void testIsExitIndice() {
+        boolean exit = ElasticsearchUtils.isExitIndice("chl_test");
+        System.out.println("The index is exit:{} " + exit);
+    }
+
+    @Test
+    public void testIsExistsIndiceType() {
+        boolean exit = ElasticsearchUtils.isExistsIndiceType("chl_test", "person");
+        System.out.println("The index type is exit:{} " + exit);
     }
 
 
