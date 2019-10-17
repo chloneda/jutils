@@ -25,7 +25,7 @@ public class MultiPattern {
 
     public MultiPatternAutomaton makeAutomatonWithPrefix(String prefix) {
         final List<Automaton> automata = new ArrayList<>();
-        for (final String ptn: this.patterns) {
+        for (final String ptn : this.patterns) {
             final String prefixedPattern = prefix + ptn;
             final Automaton automaton = new RegExp(prefixedPattern).toAutomaton();
             automaton.minimize();
@@ -37,7 +37,7 @@ public class MultiPattern {
     /**
      * Equivalent of Pattern.compile, but the result is only valid for pattern search.
      * The searcher will return the first occurrence of a pattern.
-     *
+     * <p>
      * This operation is costly, make sure to cache its result when performing
      * search with the same patterns against the different strings.
      *
@@ -46,7 +46,7 @@ public class MultiPattern {
     public MultiPatternSearcher searcher() {
         final MultiPatternAutomaton searcherAutomaton = makeAutomatonWithPrefix(".*");
         final List<Automaton> indidivualAutomatons = new ArrayList<>();
-        for (final String pattern: this.patterns) {
+        for (final String pattern : this.patterns) {
             final Automaton automaton = new RegExp(pattern).toAutomaton();
             automaton.minimize();
             automaton.determinize();
@@ -58,10 +58,10 @@ public class MultiPattern {
 
     /**
      * Equivalent of Pattern.compile, but the result is only valid for full string matching.
-     *
+     * <p>
      * If more than one pattern are matched, with a match ending at the same offset,
      * return all of the pattern ids in a sorted array.
-     *
+     * <p>
      * This operation is costly, make sure to cache its result when performing
      * search with the same patterns against the different strings.
      *

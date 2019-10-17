@@ -3,8 +3,8 @@ package com.chloneda.jutils.filesystem.ftp;
 import java.util.Date;
 
 /**
- * Created by chloneda
- * Description:FTP文件属性类
+ * @Created by chloneda
+ * @Description:FTP文件属性类
  */
 public class FTPFileAttr {
     private String fileName;

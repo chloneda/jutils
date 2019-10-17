@@ -5,8 +5,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import java.util.*;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description: Bean之间属性复制，抽象工具类，不可实例化
  */
 public abstract class JBeanUtils {
 

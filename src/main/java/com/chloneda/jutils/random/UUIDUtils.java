@@ -5,8 +5,8 @@ import org.apache.commons.codec.binary.Base64;
 import java.util.UUID;
 
 /**
- * Created by chloneda
- * Description: UUID (Universally Unique Identifier),通用唯一识别码
+ * @Created by chloneda
+ * @Description: UUID (Universally Unique Identifier),通用唯一识别码
  */
 public class UUIDUtils {
 

@@ -6,8 +6,8 @@
 //import java.sql.*;
 //
 ///**
-// * Created by chloneda
-// * Description:
+// * @Created by chloneda
+// * @Description:
 // */
 //public class QueryUtils {
 //    public <T> T query(Connection conn, String sql, ResultSetHandler<T> rsh) throws SQLException {

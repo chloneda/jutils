@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class RestClient {
     public static String METHOD_PARAM = "rc_method";

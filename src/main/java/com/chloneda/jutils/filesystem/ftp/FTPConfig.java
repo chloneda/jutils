@@ -3,8 +3,8 @@ package com.chloneda.jutils.filesystem.ftp;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * Created by chloneda
- * Description: 包装FTP的连接基本信息
+ * @Created by chloneda
+ * @Description: 包装FTP的连接基本信息
  */
 public class FTPConfig {
     private String hostName;

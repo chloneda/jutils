@@ -17,11 +17,11 @@ public class MultiPatternSearcher {
                          final List<Automaton> individualAutomatons) {
         this.automaton = automaton;
         this.individualAutomatons = new ArrayList<>();
-        for (final Automaton individualAutomaton: individualAutomatons) {
+        for (final Automaton individualAutomaton : individualAutomatons) {
             this.individualAutomatons.add(new RunAutomaton(individualAutomaton));
         }
         this.inverseAutomatons = new ArrayList<>(this.individualAutomatons.size());
-        for (final Automaton individualAutomaton: individualAutomatons) {
+        for (final Automaton individualAutomaton : individualAutomatons) {
             final Automaton inverseAutomaton = inverseAutomaton(individualAutomaton);
             this.inverseAutomatons.add(new RunAutomaton(inverseAutomaton));
         }
@@ -29,11 +29,11 @@ public class MultiPatternSearcher {
 
     static Automaton inverseAutomaton(final Automaton automaton) {
         final Map<State, State> stateMapping = new HashMap<>();
-        for (final State state: automaton.getStates()) {
+        for (final State state : automaton.getStates()) {
             stateMapping.put(state, new State());
         }
-        for (final State state: automaton.getStates()) {
-            for (final Transition transition: state.getTransitions()) {
+        for (final State state : automaton.getStates()) {
+            for (final Transition transition : state.getTransitions()) {
                 final State invDest = stateMapping.get(state);
                 final State invOrig = stateMapping.get(transition.getDest());
                 invOrig.addTransition(new Transition(transition.getMin(), transition.getMax(), invDest));
@@ -44,7 +44,7 @@ public class MultiPatternSearcher {
         final State initialState = new State();
         inverseAutomaton.setInitialState(initialState);
         final List<StatePair> epsilons = new ArrayList<>();
-        for (final State acceptState: automaton.getAcceptStates()) {
+        for (final State acceptState : automaton.getAcceptStates()) {
             final State invOrigState = stateMapping.get(acceptState);
             final StatePair statePair = new StatePair(initialState, invOrigState);
             epsilons.add(statePair);
@@ -115,7 +115,7 @@ public class MultiPatternSearcher {
             final int seqLength = this.seq.length();
             { // first find a match and "choose the pattern".
                 int state = 0;
-                for (int pos=this.end; pos < seqLength; pos++) {
+                for (int pos = this.end; pos < seqLength; pos++) {
                     final char c = this.seq.charAt(pos);
                     state = automaton.step(state, c);
                     if (automaton.atLeastOneAccept[state]) {

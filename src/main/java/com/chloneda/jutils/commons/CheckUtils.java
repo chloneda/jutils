@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Created by chloneda@gmail.com
- * Description:
+ * @Created by chloneda@gmail.com
+ * @Description:
  * 提供功能:
  * 1、先决条件判断(not)
  * 2、对象有效性校验(is)

@@ -1,8 +1,8 @@
 package com.chloneda.jutils.protocol.snmp;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class SNMPTrapUtilsTest {
 

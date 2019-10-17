@@ -9,7 +9,7 @@ public class MultiPatternMatcher {
     private final MultiPatternAutomaton automaton;
     private List<String> patterns;
 
-    public MultiPatternMatcher(MultiPatternAutomaton automaton,List<String> patterns) {
+    public MultiPatternMatcher(MultiPatternAutomaton automaton, List<String> patterns) {
         this.automaton = automaton;
         this.patterns = patterns;
     }
@@ -18,10 +18,10 @@ public class MultiPatternMatcher {
         this.automaton = automaton;
     }
 
-    public String[] getPatterns(int ...indexs){
-        String []vals = new String[indexs.length];
+    public String[] getPatterns(int... indexs) {
+        String[] vals = new String[indexs.length];
         int offset = 0;
-        for(int index:indexs){
+        for (int index : indexs) {
             vals[offset++] = patterns.get(index);
         }
         return vals;
@@ -48,7 +48,7 @@ public class MultiPatternMatcher {
                 return NO_MATCH_STRING;
             }
         }
-        int []indexs = this.automaton.accept[p];
+        int[] indexs = this.automaton.accept[p];
         return getPatterns(indexs);
     }
 

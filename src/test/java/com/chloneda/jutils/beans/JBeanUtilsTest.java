@@ -3,8 +3,8 @@ package com.chloneda.jutils.beans;
 import org.junit.Test;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class JBeanUtilsTest {
 

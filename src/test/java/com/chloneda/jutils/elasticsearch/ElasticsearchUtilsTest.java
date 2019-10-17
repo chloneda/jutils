@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ElasticsearchUtilsTest {
     private TransportClient client;
@@ -76,13 +76,13 @@ public class ElasticsearchUtilsTest {
 
     @Test
     public void testDeleteIndexWithType() {//?
-        boolean isDeleted = ElasticsearchUtils.deleteIndexWithType("http_log","log");
+        boolean isDeleted = ElasticsearchUtils.deleteIndexWithType("http_log", "log");
         System.out.println("The ES index with type is deleted:{} " + isDeleted);
     }
 
     @Test
     public void testGetFieldsIndexTypes() {
-        Map map = ElasticsearchUtils.getFieldsIndexTypes("172.21.8.28",9200,"chl_test","person");
+        Map map = ElasticsearchUtils.getFieldsIndexTypes("172.21.8.28", 9200, "chl_test", "person");
         System.out.println("The ES index fields is :{} " + map);
     }
 

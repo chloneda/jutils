@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by chloneda@gmail.com
- * Description: FTP常量类
+ * @Created by chloneda@gmail.com
+ * @Description: FTP常量类
  */
 public class FTPConstant {
     /**

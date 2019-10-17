@@ -1,8 +1,8 @@
 package com.chloneda.jutils.json;
 
 /**
- * Created by chloneda on 2019-08-21
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

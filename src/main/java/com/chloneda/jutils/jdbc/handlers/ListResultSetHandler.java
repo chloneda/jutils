@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ListResultSetHandler implements ResultSetHandler<List<Map<String,Object>>> {
 

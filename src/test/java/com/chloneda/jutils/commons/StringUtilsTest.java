@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class StringUtilsTest {
 

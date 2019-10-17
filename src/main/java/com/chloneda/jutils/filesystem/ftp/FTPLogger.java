@@ -1,8 +1,8 @@
 package com.chloneda.jutils.filesystem.ftp;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class FTPLogger {
     private String host;

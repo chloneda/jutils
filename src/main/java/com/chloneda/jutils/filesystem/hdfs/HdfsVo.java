@@ -3,8 +3,8 @@ package com.chloneda.jutils.filesystem.hdfs;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class HdfsVo {
     //其他配置参数

@@ -7,8 +7,8 @@ import com.google.gson.TypeAdapter;
 import java.lang.reflect.Type;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class GsonUtils {
 

@@ -15,7 +15,7 @@ class MultiState {
     }
 
     public boolean isNull() {
-        for (State state: this.states) {
+        for (State state : this.states) {
             if (state != null) {
                 return false;
             }
@@ -38,12 +38,11 @@ class MultiState {
 
     public MultiState step(char token) {
         State[] nextStates = new State[this.states.length];
-        for (int c=0; c< this.states.length; c++) {
+        for (int c = 0; c < this.states.length; c++) {
             State prevState = this.states[c];
             if (prevState == null) {
                 nextStates[c] = null;
-            }
-            else {
+            } else {
                 nextStates[c] = this.states[c].step(token);
             }
         }
@@ -53,14 +52,14 @@ class MultiState {
 
     public int[] toAcceptValues() {
         List<Integer> acceptValues = new ArrayList<>();
-        for (int stateId=0; stateId<this.states.length; stateId++) {
+        for (int stateId = 0; stateId < this.states.length; stateId++) {
             State curState = this.states[stateId];
             if ((curState != null) && (curState.isAccept())) {
                 acceptValues.add(stateId);
             }
         }
         int[] acceptValuesArr = new int[acceptValues.size()];
-        for (int c=0; c<acceptValues.size(); c++) {
+        for (int c = 0; c < acceptValues.size(); c++) {
             acceptValuesArr[c] = acceptValues.get(c);
         }
         return acceptValuesArr;

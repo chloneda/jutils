@@ -5,8 +5,8 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ResultSetUtils {
 

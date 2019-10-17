@@ -1,8 +1,8 @@
 package com.chloneda.jutils.algorithm;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  * 常用的摘要算法有MD5,SHA1。摘要算法是一个不可逆过程，就是无论多大数据，经过算法运算后都是生成固定长度的数据,一般结果使用16进制进行显示。
  * MD5和SHA1的区别：MD5结果是128位摘要，SHA1是160位摘要。那么MD5的速度更快，而SHA1的强度更高。
  *

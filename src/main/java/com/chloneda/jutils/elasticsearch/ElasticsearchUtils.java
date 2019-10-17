@@ -55,8 +55,8 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ElasticsearchUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchUtils.class);

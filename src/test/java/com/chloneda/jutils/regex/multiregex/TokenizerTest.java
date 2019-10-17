@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import java.util.Iterator;
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class TokenizerTest {
     private static enum TOKEN {

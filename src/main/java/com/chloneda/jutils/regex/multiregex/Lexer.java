@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 public class Lexer<T extends Enum> {
 
-    private final ArrayList<T> types = new ArrayList<>() ;
+    private final ArrayList<T> types = new ArrayList<>();
     private final ArrayList<String> patterns = new ArrayList<>();
     private transient MultiPatternAutomaton automaton = null;
 
@@ -52,8 +52,7 @@ public class Lexer<T extends Enum> {
                         Token<T> buff = next;
                         if (scanner.nextUnchecked()) {
                             next = Token.fromScanner(scanner);
-                        }
-                        else {
+                        } else {
                             next = null;
                         }
                         return buff;

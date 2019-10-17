@@ -1,14 +1,13 @@
 package com.chloneda.jutils.compress;
 
-import com.chloneda.jutils.compress.ZipUtil;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ZipUtilTest {
 
@@ -18,7 +17,7 @@ public class ZipUtilTest {
         String srcDirPath = "D:/opt/share/zipFolder";
         String dstZipFilePath = "D:/opt/share/new.zip";
 
-        ZipUtil.compress(srcDirPath , dstZipFilePath);
+        ZipUtil.compress(srcDirPath, dstZipFilePath);
     }
 
     @Test
@@ -29,7 +28,7 @@ public class ZipUtilTest {
         Objects.requireNonNull(targetDirPath);
         Objects.requireNonNull(zipFilePath);
 
-        ZipUtil.decompress(zipFilePath , targetDirPath);
+        ZipUtil.decompress(zipFilePath, targetDirPath);
     }
 
 }

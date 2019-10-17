@@ -1,6 +1,5 @@
 package com.chloneda.jutils.protocol.snmp;
 
-import com.chloneda.jutils.protocol.snmp.SNMPUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +10,8 @@ import org.snmp4j.smi.OID;
 import java.io.IOException;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class SNMPUtilsTest {
     SNMPUtils snmpUtils;

@@ -3,8 +3,8 @@ package com.chloneda.jutils;
 import java.util.regex.Pattern;
 
 /**
- * Created by chloneda
- * Description: 常量相关工具类，可以继承扩展
+ * @Created by chloneda
+ * @Description: 常量相关工具类，可以继承扩展
  */
 public class Chloneda {
 
@@ -30,22 +30,22 @@ public class Chloneda {
         /**
          * MB与Byte的倍数
          */
-        public static final int MB = 1024*1024;
+        public static final int MB = 1024 * 1024;
 
         /**
          * GB与Byte的倍数
          */
-        public static final int GB = 1024*1024*1024;
+        public static final int GB = 1024 * 1024 * 1024;
 
         /**
          * TB与Byte的倍数
          */
-        public static final long TB = 1024*1024*1024*1024;
+        public static final long TB = 1024 * 1024 * 1024 * 1024;
 
         /**
          * PB与Byte的倍数
          */
-        public static final long PB = 1024*1024*1024*1024*1024;
+        public static final long PB = 1024 * 1024 * 1024 * 1024 * 1024;
 
         public enum MemoryUnit {
             BYTE,

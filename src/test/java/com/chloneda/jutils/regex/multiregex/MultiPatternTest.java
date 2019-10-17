@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class MultiPatternTest {
     public static MultiPattern multiPattern = MultiPattern.of(

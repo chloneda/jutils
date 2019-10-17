@@ -15,8 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by chloneda
- * Description:FTP工具类
+ * @Created by chloneda
+ * @Description:FTP工具类
  */
 public class FTPUtils implements AbstractFTP {
 
