@@ -1,4 +1,4 @@
-package com.chloneda.jutils.commons;
+package com.chloneda.jutils.test;
 
 import org.apache.commons.lang3.StringUtils;
 
