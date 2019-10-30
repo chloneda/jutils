@@ -1,4 +1,4 @@
-package com.chloneda.jutils.commons;
+package com.chloneda.jutils.exception;
 
 /**
  * @Created by chloneda
