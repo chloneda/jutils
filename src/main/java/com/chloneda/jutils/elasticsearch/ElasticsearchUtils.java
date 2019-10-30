@@ -96,6 +96,20 @@ public class ElasticsearchUtils {
         return client;
     }
 
+    public static TransportClient initClient(String host, int port, String clusterName) {
+        try {
+            // 忽略连接节点的集群名称验证
+            Settings settings = Settings.builder().put("cluster.name", clusterName).build();
+
+            client = new PreBuiltTransportClient(settings)
+                    .addTransportAddress(
+                            new InetSocketTransportAddress(InetAddress.getByName(host), port));
+        } catch (Throwable e) {
+            LOGGER.error("ES client: {" + host + ":" + port + "} 初始化失败！", e);
+        }
+        return client;
+    }
+
     public static TransportClient initClient(EsConfig esConfig) {
         // 连接集群的设置
         Settings settings = Settings.builder()
