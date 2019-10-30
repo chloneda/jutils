@@ -21,7 +21,7 @@ public class ElasticsearchUtilsTest {
         esConfig.setPort(9300);
         esConfig.setSniff(false);
         esConfig.setClusterName("elastic");
-        client = ElasticsearchUtils.createClient(esConfig);
+        client = ElasticsearchUtils.initClient(esConfig);
     }
 
     @Test
