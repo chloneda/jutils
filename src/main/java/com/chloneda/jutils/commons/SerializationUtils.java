@@ -17,7 +17,7 @@ public abstract class SerializationUtils {
             return null;
         }
         ByteArrayOutputStream baos = null;
-        ObjectOutputStream oos =null;
+        ObjectOutputStream oos = null;
         try {
             baos = new ByteArrayOutputStream(1024);
             oos = new ObjectOutputStream(baos);
@@ -27,7 +27,7 @@ public abstract class SerializationUtils {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }finally {
+        } finally {
             close(baos);
             close(oos);
         }
