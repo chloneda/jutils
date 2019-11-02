@@ -5,8 +5,8 @@ import java.util.Enumeration;
 import java.util.zip.*;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ZipUtil {
     private static final int BUFFER = 8192;

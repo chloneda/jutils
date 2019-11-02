@@ -1,12 +1,10 @@
 package com.chloneda.jutils.elasticsearch;
 
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
-import java.util.Map;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class EsConfig implements Serializable {
 

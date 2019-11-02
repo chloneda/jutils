@@ -5,7 +5,7 @@ public class ScanException extends Exception {
     private final int offset;
 
     public ScanException(String context, int offset) {
-        super("Could not find any token at (" + offset + "):\"" + context +"\"");
+        super("Could not find any token at (" + offset + "):\"" + context + "\"");
         this.offset = offset;
     }
 

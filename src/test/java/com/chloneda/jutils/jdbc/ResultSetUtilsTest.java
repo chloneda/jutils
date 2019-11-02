@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ResultSetUtilsTest {
     private String url="jdbc:mysql://127.0.0.1:3306/common?characterEncoding=UTF8&amp;useSSL=false";

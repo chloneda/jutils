@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by chloneda
- * Description:FTP抽象工具类
+ * @Created by chloneda
+ * @Description:FTP抽象工具类
  */
 public interface AbstractFTP {
 

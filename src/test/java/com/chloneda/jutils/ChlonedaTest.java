@@ -1,8 +1,8 @@
 package com.chloneda.jutils;
 
 /**
- * Created by chloneda@gmail.com
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ChlonedaTest {
 }

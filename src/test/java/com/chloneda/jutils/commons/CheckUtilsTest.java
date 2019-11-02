@@ -3,8 +3,8 @@ package com.chloneda.jutils.commons;
 import org.junit.Test;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class CheckUtilsTest {
 

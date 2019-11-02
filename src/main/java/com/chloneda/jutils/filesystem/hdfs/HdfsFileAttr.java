@@ -3,8 +3,8 @@ package com.chloneda.jutils.filesystem.hdfs;
 import java.util.Date;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class HdfsFileAttr {
     private String fileName;

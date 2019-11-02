@@ -1,8 +1,8 @@
 package com.chloneda.jutils.filesystem.hdfs;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class HdfsUtils {
 

@@ -1,43 +1,62 @@
 package com.chloneda.jutils.elasticsearch;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.carrotsearch.hppc.cursors.ObjectCursor;
 import com.chloneda.jutils.commons.CheckUtils;
+import com.chloneda.jutils.commons.StringUtils;
 import com.chloneda.jutils.json.GsonUtils;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsResponse;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.cluster.metadata.MetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.*;
-import org.elasticsearch.search.aggregations.metrics.min.Min;
-import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class ElasticsearchUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchUtils.class);
@@ -45,21 +64,66 @@ public class ElasticsearchUtils {
     private static TransportClient client;
     private EsConfig esConfig;
 
+    public ElasticsearchUtils(String host, int port) {
+        initClient(host, port);
+    }
+
+    public ElasticsearchUtils(TransportClient client) {
+        initClient(client);
+    }
+
     public ElasticsearchUtils(EsConfig esConfig) {
         this.esConfig = esConfig;
         initClient(esConfig);
+    }
+
+    public static TransportClient initClient(TransportClient client) {
+        setClient(client);
+        return client;
+    }
+
+    public static TransportClient initClient(String host, int port) {
+        try {
+            // 忽略连接节点的集群名称验证
+            Settings settings = Settings.builder().put("client.transport.ignore_cluster_name", true).build();
+
+            client = new PreBuiltTransportClient(settings)
+                    .addTransportAddress(
+                            new InetSocketTransportAddress(InetAddress.getByName(host), port));
+        } catch (Throwable e) {
+            LOGGER.error("ES client: {" + host + ":" + port + "} 初始化失败！", e);
+        }
+        return client;
+    }
+
+    public static TransportClient initClient(String host, int port, String clusterName) {
+        try {
+            // 忽略连接节点的集群名称验证
+            Settings settings = Settings.builder().put("cluster.name", clusterName).build();
+
+            client = new PreBuiltTransportClient(settings)
+                    .addTransportAddress(
+                            new InetSocketTransportAddress(InetAddress.getByName(host), port));
+        } catch (Throwable e) {
+            LOGGER.error("ES client: {" + host + ":" + port + "} 初始化失败！", e);
+        }
+        return client;
     }
 
     public static TransportClient initClient(EsConfig esConfig) {
         // 连接集群的设置
         Settings settings = Settings.builder()
                 .put("cluster.name", esConfig.getClusterName() != null ? esConfig.getClusterName() : EsConfig.DEFAULT_ES_CLUSTER_NAME)
+                .put("http.type", "netty3")
                 .put("client.transport.sniff", esConfig.isSniff())
+                .put("transport.type", "netty3")
                 .build();
         try {
 //            client = new PreBuiltTransportClient(settings)
 //                    .addTransportAddress(
 //                            new TransportAddress(InetAddress.getByName(esConfig.getHost()),esConfig.getPort()));
+
+            // ES6.4 之前获取 client 方式
             client = new PreBuiltTransportClient(settings)
                     .addTransportAddress(
                             new InetSocketTransportAddress(InetAddress.getByName(esConfig.getHost()), esConfig.getPort()));
@@ -70,11 +134,333 @@ public class ElasticsearchUtils {
     }
 
     /**
+     * @param indexName 创建索引名称
+     * @return
+     */
+    public static boolean createIndex(String indexName) {
+        boolean result = false;
+        try {
+            getClient().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            getClient().close();
+        }
+        return result;
+    }
+
+    /**
+     * 创建指定索引的类型
+     *
+     * @param indexName
+     * @param type
+     * @return
+     */
+    public static boolean createType(String indexName, String type) {
+        boolean result = false;
+        try {
+            if (isExitIndex(indexName)) {
+                XContentBuilder builder = XContentFactory.jsonBuilder()
+                        .startObject().startObject("properties").endObject()
+                        .endObject();
+
+                PutMappingRequest mapping = Requests
+                        .putMappingRequest(indexName).type(type)
+                        .source(builder);
+                getClient().admin().indices().putMapping(mapping).actionGet();
+                result = true;
+            }
+        } catch (Exception e) {
+            getClient().close();
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 获取索引库下的所有type
+     *
+     * @param indexName
+     * @return
+     */
+    public static Set<String> getIndexAllTypes(String indexName) {
+        Set<String> types = new HashSet<>();
+        try {
+            if (isExitIndex(indexName)) {
+                ClusterStateResponse response = getClient().admin().cluster()
+                        .prepareState().setIndices(indexName).get();
+                MetaData metaData = response.getState().metaData();
+                if (metaData.iterator().hasNext()) {
+                    IndexMetaData indexMetaData = metaData.iterator().next();
+                    for (ObjectCursor<MappingMetaData> cursor : indexMetaData
+                            .getMappings().values()) {
+                        MappingMetaData mappingMD = cursor.value;
+                        types.add(mappingMD.type());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            getClient().close();
+            e.printStackTrace();
+        }
+        return types;
+    }
+
+    /**
+     * @param indexName
+     * @param typeName
+     * @param setMap
+     * @param type
+     * @return
+     */
+    public static boolean createIndex(String indexName, String typeName, Map<String, String> setMap, Map<String, Object> type) {
+        IndicesAdminClient indicesAdminClient = getClient().admin().indices();
+        // setting
+        Settings settings = Settings.builder().put(setMap).build();
+        // mapping
+        CreateIndexResponse response = indicesAdminClient.prepareCreate(indexName)
+                .setSettings(settings)
+                .addMapping(typeName, type)
+                .get();
+        return response.isAcknowledged();
+    }
+
+    /**
+     * 创建索引和类型,并项其中插入数据
+     * 如果索引和类型存在,则直接插入数据
+     *
+     * @param id    文档id
+     * @param datas 插入数据
+     */
+    public static boolean createIndexWithData(String indexName, String type, String id, Map<String, Object> datas) {
+        boolean result = false;
+        try {
+            IndexResponse IndexResponse = null;
+            if (StringUtils.isBlank(id)) {
+                IndexResponse = getClient().prepareIndex(indexName, type).setSource(datas).execute().actionGet();
+            } else {
+                IndexResponse = getClient().prepareIndex(indexName, type, id).setSource(datas).execute().actionGet();
+            }
+            if (IndexResponse.status() == RestStatus.CREATED) {
+                LOGGER.info("Create index is OK!");
+                result = true;
+            }
+        } catch (Exception e) {
+            getClient().close();
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 删除索引
+     *
+     * @param indexName 删除索引名称
+     * @return
+     */
+    public static boolean deleteIndex(String indexName) {
+        IndicesExistsRequest inExistsRequest = new IndicesExistsRequest(indexName);
+        IndicesExistsResponse inExistsResponse = getClient().admin().indices().exists(inExistsRequest).actionGet();
+
+        // 先判断索引索引是否存在
+        if (inExistsResponse.isExists()) {
+            DeleteIndexResponse diResponse = getClient().admin().indices().prepareDelete(indexName)
+                    .execute().actionGet();
+            return diResponse.isAcknowledged();
+        }
+        return false;
+    }
+
+    /**
+     * 根据类型清除所有索引
+     *
+     * @param indexName
+     * @param type
+     * @return
+     */
+    public static boolean deleteIndexWithType(String indexName, String type) {
+        boolean result = false;
+        try {
+            if (isExitIndex(indexName)) {
+                getClient().prepareDelete().setIndex(indexName).setType(type).execute().actionGet();
+                result = true;
+            }
+        } catch (Exception e) {
+            getClient().close();
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 获取类型下的所有字段和字段类型
+     *
+     * @param host is的地址
+     * @param port        端口号
+     * @param indexName   索引库名称
+     * @param typeName    类型名
+     * @return 返回是字段名 和 对应的json格式的类型 例如 age : {"index":"http_log","type":"long"}
+     */
+    public static Map<String, String> getFieldsIndexTypes(String host, int port, String indexName, String typeName) {
+        ArrayList<String> types = new ArrayList<String>();
+        CloseableHttpResponse response;
+        CloseableHttpClient client = null;
+        try {
+            client = HttpClients.createDefault();
+            HttpGet get = new HttpGet(
+                    "http://" + host + ":" + port + "/" + indexName + "/" + typeName + "/_mapping");
+            RequestConfig config = RequestConfig.custom()
+                    .setConnectionRequestTimeout(20000)
+                    .setConnectTimeout(20000).setSocketTimeout(20000).build();
+
+            get.setConfig(config);
+            response = client.execute(get);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                InputStream is = response.getEntity().getContent();
+                return listFields(indexName, is, typeName);
+            }
+        } catch (Exception e) {
+            //getClient().close();
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static Map<String, String> listFields(String indexName, InputStream is, String TypeName)
+            throws IOException {
+        Map<String, String> hm = new HashMap<String, String>();
+        StringBuilder out = new StringBuilder();
+        byte[] b = new byte[4096];
+        for (int n; (n = is.read(b)) != -1; ) {
+            out.append(new String(b, 0, n));
+        }
+        String str = out.toString();
+        JSONObject obj = (JSONObject) JSONObject.parse(str);
+        JSONObject obj1 = (JSONObject) obj.get(indexName);
+        JSONObject obj2 = (JSONObject) obj1.get("mappings");
+        JSONObject obj3 = (JSONObject) obj2.get(TypeName);
+        JSONObject obj4 = (JSONObject) obj3.get("properties");
+        Iterator<String> it = obj4.keySet().iterator();
+        while (it.hasNext()) {
+            Map<String, String> map = new HashMap<String, String>();
+            String key = it.next();
+            JSONObject fieldInfo = (JSONObject) obj4.get(key);
+            String type = fieldInfo.getString("type");
+            String analyzer = fieldInfo.getString("index_analyzer");
+            String index = fieldInfo.getString("index");
+            String store = fieldInfo.getString("store");
+            map.put("store", store);
+            if (!StringUtils.isBlank(type)) {
+                if (type.equals("string")) {
+                    map.put("type", "String");
+                    if (index != null) {
+                        if (index.equals("not_analyzed")) {
+                            map.put("index", "not_analyzed");
+                        } else if (index.equals("no")) {
+                            map.put("index", "no");
+                        }
+                    } else {
+                        map.put("type", "String");
+                        map.put("index", "analyzed");
+                        map.put("analyzer", analyzer);
+                    }
+                } else {
+                    if (index == null) {
+                        map.put("index", "indexed");
+                        if (type.equals("date")) {
+                            map.put("type", "date");
+                            map.put("format", fieldInfo.getString("format"));
+                        } else {
+                            map.put("type", type);
+                        }
+                    } else if (index.equals("no")) {
+                        map.put("index", "no");
+                        if (type.equals("date")) {
+                            map.put("type", "date");
+                            map.put("format", fieldInfo.getString("format"));
+                        } else {
+                            map.put("type", type);
+                        }
+                    }
+                }
+            } else {
+                map.put("type", "object");
+                String content = fieldInfo.getString("properties");
+                if (!StringUtils.isBlank(content)) {
+                    map.put("content", content);
+                }
+            }
+            JSON.toJSONString(map);
+            hm.put(key, JSON.toJSONString(map));
+        }
+        return hm;
+    }
+
+    /**
+     * match匹配type下的所有的字段进行查询
+     *
+     * @param esclient
+     * @param elasticIndex
+     * @param TypeName
+     * @return
+     */
+    public static String matchAllQuery(TransportClient esclient, String elasticIndex, String TypeName) {
+
+        QueryBuilder qb = QueryBuilders.matchAllQuery();
+        SearchResponse sr = esclient.prepareSearch(elasticIndex)
+                .setTypes(TypeName).setQuery(qb).execute().actionGet();
+        SearchHits hits = sr.getHits();
+        JSONArray jsonArray = hitsToJSONArray(hits);
+        return jsonArray.toString();
+    }
+
+    /**
+     * match查询
+     * 对内容进行多个字段进行索引查询
+     *
+     * @param esclient     es客户端对象
+     * @param elasticIndex 对应索引
+     * @param TypeName     类型
+     * @param query        需要进行查询的内容
+     * @param fieldNames   检索的字段名称
+     * @return
+     */
+    public static String matchQuery(TransportClient esclient, String elasticIndex, String TypeName
+            , String query, String... fieldNames) {
+        QueryBuilder qb = QueryBuilders.multiMatchQuery(query, fieldNames);
+        SearchResponse sr = esclient.prepareSearch(elasticIndex)
+                .setTypes(TypeName).setQuery(qb).get();
+        SearchHits hits = sr.getHits();
+        JSONArray jsonArray = hitsToJSONArray(hits);
+        return jsonArray.toString();
+    }
+
+    private static JSONArray hitsToJSONArray(SearchHits hits) {
+        JSONArray jsonArray = new JSONArray();
+        if (hits.getTotalHits() > 0) {
+            for (SearchHit hit : hits) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("Id", hit.getId());
+                Map<String, Object> map = hit.getSourceAsMap();
+                Set<String> flds = map.keySet();
+                for (String field : flds) {
+                    jsonObject.put(field, map.get(field));
+                }
+                jsonArray.add(jsonObject);
+            }
+        } else {
+            LOGGER.info("Nothing!");
+        }
+        return jsonArray;
+    }
+
+    /**
      * 获取所有索引
      *
      * @return
      */
-    public static Set<String> getAllIndices() {
+    public static Set<String> getAllIndexes() {
         ActionFuture<IndicesStatsResponse> isr = getClient()
                 .admin()
                 .indices()
@@ -89,7 +475,7 @@ public class ElasticsearchUtils {
      * @param indexName 索引名
      * @return
      */
-    public static boolean isExitIndice(String indexName) {
+    public static boolean isExitIndex(String indexName) {
         IndicesExistsResponse response = getClient()
                 .admin()
                 .indices()
@@ -105,7 +491,7 @@ public class ElasticsearchUtils {
      * @param indexType 索引类型
      * @return
      */
-    public static boolean isExistsIndiceType(String indexName, String indexType) {
+    public static boolean isExistsIndexType(String indexName, String indexType) {
         TypesExistsResponse response = getClient()
                 .admin()
                 .indices()
@@ -115,8 +501,8 @@ public class ElasticsearchUtils {
         return response.isExists();
     }
 
-    public static MetaData getMetaData(){
-        MetaData metaData = ((ClusterStateResponse)getClient()
+    public static MetaData getMetaData() {
+        MetaData metaData = ((ClusterStateResponse) getClient()
                 .admin()
                 .cluster()
                 .prepareState()
@@ -127,6 +513,10 @@ public class ElasticsearchUtils {
         return metaData;
     }
 
+    public static void setClient(TransportClient transportClient) {
+        CheckUtils.requireNotNull(client, "The client is null !");
+        client = transportClient;
+    }
 
     public static TransportClient getClient() {
         CheckUtils.requireNotNull(client, "The client is null !");
@@ -138,20 +528,31 @@ public class ElasticsearchUtils {
         client.close();
     }
 
+    public static boolean isConnected() {
+        try {
+            getAllIndexes().size();
+            return true;
+        } catch (Exception var) {
+            var.printStackTrace();
+            return false;
+        }
+    }
+
     public static void main(String[] args) {
         EsConfig esConfig = new EsConfig();
-        esConfig.setHost("172.21.7.203");
+        esConfig.setHost("127.0.0.1");
         esConfig.setPort(9300);
         esConfig.setSniff(false);
-        esConfig.setClusterName("es");
+        esConfig.setClusterName("elastic");
         ElasticsearchUtils.initClient(esConfig);
         //TransportClient client = elasticSearchUtils.getClient();
-        Set set = ElasticsearchUtils.getAllIndices();
-        JSONObject jsonObject = initJson();
+        Set set = ElasticsearchUtils.getAllIndexes();
 
-        //System.out.println(((Map) ((List) jsonObject.get("sort")).get(0)).get("sortField"));
-        SearchRequestBuilder sBuilder = null;
-        ElasticsearchUtils.build(jsonObject, "compex_test2");
+        System.out.println(set);
+//        JSONObject jsonObject = initJson();
+//        System.out.println(((Map) ((List) jsonObject.get("sort")).get(0)).get("sortField"));
+//        SearchRequestBuilder sBuilder = null;
+//        ElasticsearchUtils.build(jsonObject, "compex_test2");
 
 
     }
@@ -320,6 +721,5 @@ public class ElasticsearchUtils {
         searchBuilder.setFrom(from.intValue()).setSize(size.intValue());
         return searchBuilder;
     }
-
 
 }

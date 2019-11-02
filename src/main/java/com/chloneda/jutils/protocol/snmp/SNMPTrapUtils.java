@@ -16,9 +16,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 /**
- * Created by chloneda
- * Description:
- *      SNMP Trap多线程接收解析信息
+ * @Created by chloneda
+ * @Description: SNMP Trap多线程接收解析信息
  */
 public class SNMPTrapUtils implements CommandResponder {
 
@@ -94,8 +93,8 @@ public class SNMPTrapUtils implements CommandResponder {
         }
         Vector<? extends VariableBinding> vbs = event.getPDU().getVariableBindings();
         for (VariableBinding vb : vbs) {
-            String key=vb.getOid().toString();
-            String value=vb.getVariable().toString();
+            String key = vb.getOid().toString();
+            String value = vb.getVariable().toString();
             System.out.println(key + " = " + value);
         }
         System.out.println("---- 结束 ResponderEvent 解析 ----");

@@ -15,8 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by chloneda
- * Description:FTP工具类
+ * @Created by chloneda
+ * @Description:FTP工具类
  */
 public class FTPUtils implements AbstractFTP {
 
@@ -236,6 +236,14 @@ public class FTPUtils implements AbstractFTP {
                     attr.setFileName(fileName);
                     attr.setLastModifiedTime(file.getTimestamp().getTime());
                     attr.setSize(file.getSize());
+                    attr.setGroup(file.getGroup());
+                    attr.setOwner(file.getUser());
+                    if (file.getRawListing().substring(0, 10).startsWith("-")
+                            || file.getRawListing().substring(0, 10).startsWith("l")) {
+                        attr.setPermission(file.getRawListing().substring(0, 10));
+                    } else {
+                        attr.setPermission(null);
+                    }
                     map.put(fileName, attr);
                 } else if (files[i].isDirectory()) {
                     map.putAll(listFileAttr(directory + files[i].getName() + "/"));
@@ -330,7 +338,7 @@ public class FTPUtils implements AbstractFTP {
 
     @Override
     public void destory() {
-        if (CheckUtils.isNull(client)) {
+        if (CheckUtils.isNotNull(client)) {
             try {
                 client.disconnect();
             } catch (IOException e) {

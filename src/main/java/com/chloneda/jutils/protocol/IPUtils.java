@@ -3,8 +3,8 @@ package com.chloneda.jutils.protocol;
 import java.util.StringTokenizer;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class IPUtils {
 

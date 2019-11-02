@@ -15,7 +15,7 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 /**
- * Description:获得本机的信息
+ * @Description:获得本机的信息
  */
 public class SNMPDemo {
 

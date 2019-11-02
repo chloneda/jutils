@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class Scanner<T extends Enum> {
 
-
     private static final int BUFFER_NUM_BITS = 8;
     private static final int MASK = (1 << BUFFER_NUM_BITS) - 1;
 
@@ -40,7 +39,7 @@ public class Scanner<T extends Enum> {
     private static Reader readerFromCharSequence(final CharSequence charSeq) {
         final int numChars = charSeq.length();
         final char[] chars = new char[numChars];
-        for (int i=0; i<numChars; i++) {
+        for (int i = 0; i < numChars; i++) {
             chars[i] = charSeq.charAt(i);
         }
         return new CharArrayReader(chars);
@@ -93,10 +92,9 @@ public class Scanner<T extends Enum> {
                 this.endOfReader = true;
                 this.readerLength = i;
                 return 0;
-            }
-            else {
+            } else {
                 this.readUntil += 1;
-                final char chr = (char)cInt;
+                final char chr = (char) cInt;
                 this.put(i, chr);
                 return chr;
             }
@@ -125,8 +123,7 @@ public class Scanner<T extends Enum> {
             p = this.automaton.step(p, chr);
             if (p == -1) {
                 break;
-            }
-            else {
+            } else {
                 final int[] accept = this.automaton.accept[p];
                 if (accept.length > 0) {
                     final int minAccept = accept[0];
@@ -156,7 +153,7 @@ public class Scanner<T extends Enum> {
             }
             final int contextStart = Math.max(0, this.start - 10);
             final int contextEnd = Math.min(this.start + 10, this.readUntil);
-            final String context = this.subSequence(contextStart, this.start) + "|" +  this.subSequence(this.start, contextEnd);
+            final String context = this.subSequence(contextStart, this.start) + "|" + this.subSequence(this.start, contextEnd);
             throw new ScanException(context, this.start);
         }
         this.end = lastLetter + 1;
@@ -165,7 +162,7 @@ public class Scanner<T extends Enum> {
     }
 
     private CharSequence subSequence(final int start, final int end) {
-        return new CharSeq(this.circularBuffer, start, end-start);
+        return new CharSeq(this.circularBuffer, start, end - start);
     }
 
 

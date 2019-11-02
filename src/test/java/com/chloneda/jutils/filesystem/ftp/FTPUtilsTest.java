@@ -7,8 +7,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 /**
- * Created by chloneda
- * Description:
+ * @Created by chloneda
+ * @Description:
  */
 public class FTPUtilsTest {
     private FTPUtils ftpUtils;

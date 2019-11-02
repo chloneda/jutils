@@ -16,28 +16,25 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
 
 /**
- * Created by chloneda
- * Blog:
- *      https://www.cnblogs.com/chloneda
- *      https://chloneda.github.io/
- *
- * Description: 根据SNMP协议编写的SNMP常用操作:
- *
- *  1.get-request 操作: 从代理进程处提取一个或多个参数值,只查询MIB的叶子节点
- *  2.getNext-request 操作: 从代理进程处提取紧跟当前参数值的下一个参数值
- *  3.getBulk-request 操作: 会根据最大重试值执行一个连续的getNext操作,该操作常用于查询数据量较大的场景，可以提高效率
- *  4.set-request 操作: 设置代理进程的一个或多个参数值
- *  5.get-response 操作: 这个操作是由代理进程发出的,它是上述四种操作的响应
- *  6.inform-request 操作:
- *  7.report 操作:
- *  8.trap 操作: 代理进程主动发出的报文,通知管理进程有某些事情发生
- *
+ * @Created by chloneda
+ * @Blog: https://www.cnblogs.com/chloneda
+ *        https://chloneda.github.io/
+ * @Description: 根据SNMP协议编写的SNMP常用操作:
+ * <p>
+ * 1.get-request 操作: 从代理进程处提取一个或多个参数值,只查询MIB的叶子节点
+ * 2.getNext-request 操作: 从代理进程处提取紧跟当前参数值的下一个参数值
+ * 3.getBulk-request 操作: 会根据最大重试值执行一个连续的getNext操作,该操作常用于查询数据量较大的场景，可以提高效率
+ * 4.set-request 操作: 设置代理进程的一个或多个参数值
+ * 5.get-response 操作: 这个操作是由代理进程发出的,它是上述四种操作的响应
+ * 6.inform-request 操作:
+ * 7.report 操作:
+ * 8.trap 操作: 代理进程主动发出的报文,通知管理进程有某些事情发生
  */
 public class SNMPUtils {
     private static final Logger logger = LoggerFactory.getLogger(SNMPUtils.class);
     private static final String ROOT = "WALK";
 
-    private static Map<String,String> datas;
+    private static Map<String, String> datas;
     private static Snmp snmp = null;
 
     private static String host;
@@ -46,12 +43,12 @@ public class SNMPUtils {
     private static String community;
     private static Target target;
 
-    private static String securityName="snmpuser";
-    private static String authPassword="auth123456";
-    private static String privPassword="priv123456";
-    private static String privProtocol="DES";
-    private static String authProtocol="MD5";
-    private static int securityLevel=SecurityLevel.AUTH_PRIV;
+    private static String securityName = "snmpuser";
+    private static String authPassword = "auth123456";
+    private static String privPassword = "priv123456";
+    private static String privProtocol = "DES";
+    private static String authProtocol = "MD5";
+    private static int securityLevel = SecurityLevel.AUTH_PRIV;
     private static OID priProtocolBean;
     private static OID authProtocolBean;
 
@@ -122,7 +119,7 @@ public class SNMPUtils {
                 ((CommunityTarget) target).setCommunity(new OctetString(community));
                 target.setVersion(SnmpConstants.version1);
             } else {
-                ((CommunityTarget)target).setCommunity(new OctetString(community));
+                ((CommunityTarget) target).setCommunity(new OctetString(community));
                 target.setVersion(SnmpConstants.version2c);
             }
 
@@ -158,6 +155,7 @@ public class SNMPUtils {
     /**
      * 根据PDU报文类型构造(create the PDU)
      * pduType and version
+     *
      * @return
      */
     public static PDU createPDU(int pduType) {
@@ -191,7 +189,7 @@ public class SNMPUtils {
         public PDU createPDU(Target target) {
             PDU pdu = super.createPDU(target);
             if (target.getVersion() == SnmpConstants.version3) {
-                ((ScopedPDU)pdu).setContextEngineID(contextEngineId);
+                ((ScopedPDU) pdu).setContextEngineID(contextEngineId);
             }
             return pdu;
         }
@@ -239,7 +237,7 @@ public class SNMPUtils {
     // getBulk操作会根据最大重试值执行一个连续的GETNEXT操作。该操作常用于查询数据量较大的场景，可以提高效率
     // 非中继值决定要进行GETNEXT操作的变量列表中的变量数，对于剩下的变量，将根据最大重试值进行连续GETNEXT操作。
     public static void snmpGetBulk(String rootOID) throws IOException {
-        datas=new HashMap<String, String>();
+        datas = new HashMap<String, String>();
         PDU request = createPDU(PDU.GETBULK);
         //getBulk操作,一定要指定MaxRepetitions，默认值是0，那样不会返回任何结(must set it,default is 0)
         request.setMaxRepetitions(10);//每次返回條數
@@ -280,7 +278,7 @@ public class SNMPUtils {
     public static void snmpWalk(OID oid, String type) throws Exception {
         if (type.equals(SNMPUtils.ROOT))
             type = oid.toString();
-        datas=new HashMap<String, String>();
+        datas = new HashMap<String, String>();
         PDU pdu = createPDU(PDU.GETNEXT);
         pdu.add(new VariableBinding(oid));
         ResponseEvent rspEvt = snmp.send(pdu, target);
@@ -334,20 +332,20 @@ public class SNMPUtils {
 
     //support snmp v1|v2c|v3
     public static ResponseEvent sendSnmpTrap(List<String> oids) throws IOException {
-        PDU pdu ;
-        if(version==SnmpConstants.version1)
-            pdu=createPDU(PDU.V1TRAP);
+        PDU pdu;
+        if (version == SnmpConstants.version1)
+            pdu = createPDU(PDU.V1TRAP);
         else
-            pdu=createPDU(PDU.TRAP);
+            pdu = createPDU(PDU.TRAP);
 
         for (String oid : oids) {
             if (oid.endsWith(".0")) {
-                pdu.add(new VariableBinding(new OID(oid),new OctetString("SNMP Trap Test.")));
+                pdu.add(new VariableBinding(new OID(oid), new OctetString("SNMP Trap Test.")));
             } else {
                 throw new IllegalArgumentException(oid + ": 为MIB中非叶子节点，请检查！");
             }
         }
-        return snmp.set(pdu,target);
+        return snmp.set(pdu, target);
     }
 
     public static void snmpGetResponse(Boolean syn, final Boolean bro, String oid) throws IOException {
@@ -369,9 +367,9 @@ public class SNMPUtils {
 
             System.out.println(
                     "===> Synchronize message from " + response.getPeerAddress() + System.getProperty("line.separator")
-                        + "===> request:" + response.getRequest() + System.getProperty("line.separator")
-                        + "===> response:" + response.getResponse() + System.getProperty("line.separator")
-                        + "===> get object: " + response.getUserObject() + System.getProperty("line.separator"));
+                            + "===> request:" + response.getRequest() + System.getProperty("line.separator")
+                            + "===> response:" + response.getResponse() + System.getProperty("line.separator")
+                            + "===> get object: " + response.getUserObject() + System.getProperty("line.separator"));
         } else {
             /**
              * 异步发送模式也称非阻塞模式。当程序发送一条消息之后，线程将会继续执行，当收到消息的回应的时候，
@@ -390,8 +388,8 @@ public class SNMPUtils {
                     PDU response = event.getResponse();
                     System.out.println(
                             "===> Asynchronise message from " + event.getPeerAddress() + System.getProperty("line.separator")
-                            + "===> request: " + request + System.getProperty("line.separator")
-                            + "===> response: " + response.toString());
+                                    + "===> request: " + request + System.getProperty("line.separator")
+                                    + "===> response: " + response.toString());
                 }
             };
             // 发送报文
@@ -399,8 +397,8 @@ public class SNMPUtils {
         }
     }
 
-    public void destory(){
-        if(snmp!=null){
+    public void destory() {
+        if (snmp != null) {
             try {
                 snmp.close();
             } catch (IOException e) {

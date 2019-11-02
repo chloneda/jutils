@@ -1,4 +1,4 @@
-package com.chloneda.jutils.commons;
+package com.chloneda.jutils.test;
 
 import com.chloneda.jutils.regex.multiregex.MultiPattern;
 import com.chloneda.jutils.regex.multiregex.MultiPatternMatcher;
@@ -7,8 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Created by chloneda on 2019-06-27
- * Description:
+ * @Created by chloneda
+ * @Description:
  * <p>
  * JUnit4常用的几个annotation：
  *

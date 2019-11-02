@@ -3,14 +3,11 @@ package com.chloneda.jutils.test;
 /**
  * Created by chloneda
  * Description:
- * 枚举型单例
  */
 public enum Singleton {
-    INSTANCE;
+    FISH,MEAT,RICE;
 
-    Singleton() {
+    Singleton getInstance() {
+        return Singleton.FISH;
     }
 }
-
-
-

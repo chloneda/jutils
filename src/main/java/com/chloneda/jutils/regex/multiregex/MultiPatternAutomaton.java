@@ -25,7 +25,7 @@ public class MultiPatternAutomaton {
         this.alphabet = alphabet(points);
         this.stride = points.length;
         this.atLeastOneAccept = new boolean[accept.length];
-        for (int i=0; i<accept.length; i++) {
+        for (int i = 0; i < accept.length; i++) {
             this.atLeastOneAccept[i] = this.accept[i].length > 0;
         }
         this.nbPatterns = nbPatterns;
@@ -45,7 +45,7 @@ public class MultiPatternAutomaton {
     static MultiState initialState(List<Automaton> automata) {
         final State[] initialStates = new State[automata.size()];
         int c = 0;
-        for (final Automaton automaton: automata) {
+        for (final Automaton automaton : automata) {
             initialStates[c] = automaton.getInitialState();
             c += 1;
         }
@@ -53,7 +53,7 @@ public class MultiPatternAutomaton {
     }
 
     static MultiPatternAutomaton make(final List<Automaton> automata) {
-        for (final Automaton automaton: automata) {
+        for (final Automaton automaton : automata) {
             automaton.determinize();
         }
 
@@ -73,20 +73,18 @@ public class MultiPatternAutomaton {
             final MultiState visitingState = statesToVisits.remove();
             assert multiStateIndex.containsKey(visitingState);
             final int[] curTransitions = new int[points.length];
-            for (int c=0; c<points.length; c++) {
+            for (int c = 0; c < points.length; c++) {
                 final char point = points[c];
                 final MultiState destState = visitingState.step(point);
                 if (destState.isNull()) {
                     curTransitions[c] = -1;
-                }
-                else {
+                } else {
                     final int destStateId;
                     if (!multiStateIndex.containsKey(destState)) {
                         statesToVisits.add(destState);
                         destStateId = multiStateIndex.size();
                         multiStateIndex.put(destState, destStateId);
-                    }
-                    else {
+                    } else {
                         destStateId = multiStateIndex.get(destState);
                     }
                     curTransitions[c] = destStateId;
@@ -99,14 +97,14 @@ public class MultiPatternAutomaton {
         final int nbStates = multiStateIndex.size();
 
         final int[] transitions = new int[nbStates * points.length];
-        for (int stateId=0; stateId<nbStates; stateId++) {
-            for (int pointId = 0; pointId<points.length; pointId++) {
+        for (int stateId = 0; stateId < nbStates; stateId++) {
+            for (int pointId = 0; pointId < points.length; pointId++) {
                 transitions[stateId * points.length + pointId] = transitionList.get(stateId)[pointId];
             }
         }
 
         final int[][] acceptValues = new int[nbStates][];
-        for (final Map.Entry<MultiState, Integer> entry: multiStateIndex.entrySet()) {
+        for (final Map.Entry<MultiState, Integer> entry : multiStateIndex.entrySet()) {
             final Integer stateId = entry.getValue();
             final MultiState multiState = entry.getKey();
             acceptValues[stateId] = multiState.toAcceptValues();

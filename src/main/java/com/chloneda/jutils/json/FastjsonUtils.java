@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Created by chloneda
- * Description: Json操作工具类，基于fastjson封装
+ * @Created by chloneda
+ * @Description: Json操作工具类，基于fastjson封装
  */
 public final class FastjsonUtils {
 
