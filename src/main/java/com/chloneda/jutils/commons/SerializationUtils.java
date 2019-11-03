@@ -1,6 +1,7 @@
 package com.chloneda.jutils.commons;
 
 import java.io.*;
+import java.util.Objects;
 
 /**
  * @Created by chloneda
@@ -12,46 +13,33 @@ public abstract class SerializationUtils {
     private SerializationUtils() {
     }
 
-    public static byte[] serialize(Object object) {
-        if (object == null) {
-            return null;
-        }
-        ByteArrayOutputStream baos = null;
-        ObjectOutputStream oos = null;
-        try {
-            baos = new ByteArrayOutputStream(1024);
-            oos = new ObjectOutputStream(baos);
-            oos.writeObject(object);
+    public static byte[] serialize(Serializable obj) {
+        Objects.requireNonNull(obj, "The Serializable Object must not be null!");
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+             ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(obj);
             oos.flush();
             return baos.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            close(baos);
-            close(oos);
         }
     }
 
-    public static Object deserialize(byte[] bytes) {
-        if (bytes == null) {
+    public static <T> T deserialize(byte[] bytes) {
+        Objects.requireNonNull(bytes, "The byte[] must not be null!");
+        return deserialize(new ByteArrayInputStream(bytes));
+    }
+
+    public static <T> T deserialize(InputStream inputStream) {
+        Objects.requireNonNull(inputStream, "The InputStream must not be null!");
+
+        try (ObjectInputStream ois = new ObjectInputStream(inputStream)) {
+            return (T) ois.readObject();
+        } catch (IOException | ClassNotFoundException var) {
+            var.printStackTrace();
             return null;
-        }
-        ByteArrayInputStream bis = null;
-        ObjectInputStream ois = null;
-        try {
-            bis = new ByteArrayInputStream(bytes);
-            ois = new ObjectInputStream(bis);
-            return ois.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            close(bis);
-            close(ois);
         }
     }
 

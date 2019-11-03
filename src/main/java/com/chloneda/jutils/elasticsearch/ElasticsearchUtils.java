@@ -295,10 +295,10 @@ public class ElasticsearchUtils {
     /**
      * 获取类型下的所有字段和字段类型
      *
-     * @param host is的地址
-     * @param port        端口号
-     * @param indexName   索引库名称
-     * @param typeName    类型名
+     * @param host      is的地址
+     * @param port      端口号
+     * @param indexName 索引库名称
+     * @param typeName  类型名
      * @return 返回是字段名 和 对应的json格式的类型 例如 age : {"index":"http_log","type":"long"}
      */
     public static Map<String, String> getFieldsIndexTypes(String host, int port, String indexName, String typeName) {
@@ -523,9 +523,14 @@ public class ElasticsearchUtils {
         return client;
     }
 
-    public static void destory() {
-        CheckUtils.requireNotNull(client, "The client is null !");
-        client.close();
+    public static void close(AutoCloseable closeable) {
+        if (null != closeable) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static boolean isConnected() {
