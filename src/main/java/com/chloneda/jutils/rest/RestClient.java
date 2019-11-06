@@ -1,13 +1,13 @@
 package com.chloneda.jutils.rest;
 
 import com.chloneda.jutils.commons.StringUtils;
-import org.apache.commons.lang3.Validate;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -15,11 +15,13 @@ import java.util.Properties;
  * @Description:
  */
 public class RestClient {
-    public static String METHOD_PARAM = "rc_method";
+
+    public static String METHOD_PARAM = "pa_method";
     public static String REQUEST_METHOD_GET = "GET";
     public static String REQUEST_METHOD_POST = "POST";
     public static String REQUEST_METHOD_PUT = "PUT";
     public static String REQUEST_METHOD_DELETE = "DELETE";
+
     private String contentTypeForXml = "application/xml";
     private String contentTypeForJson = "application/json";
     private String charset = "utf-8";
@@ -28,24 +30,24 @@ public class RestClient {
     }
 
     public String request(String method, String uri, String data, Properties requestProperties) throws IOException {
-        Validate.notEmpty(method, "method is empty!");
-        Validate.notEmpty(uri, "uri is empty!");
+        Objects.requireNonNull(method, "method is empty!");
+        Objects.requireNonNull(uri, "uri is empty!");
         method = this.validateMethod(method);
         return this.innerRequest(method, uri, data, requestProperties);
     }
 
     protected String innerRequest(String method, String uri, String data, Properties requestProperties) throws IOException {
         URL url = new URL(uri);
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         String var8;
         try {
             connection.setDoOutput(true);
             connection.setRequestMethod(method);
-            connection.setRequestProperty("accept", this.contentTypeForXml);
+            connection.setRequestProperty("accept", this.contentTypeForJson);
             if (data != null && !data.isEmpty()) {
                 connection.setRequestProperty("Content-Type",
-                        StringUtils.format("{}; charset={}", new Object[]{this.contentTypeForXml, this.charset}));
+                        StringUtils.format("{}; charset={}", new Object[]{this.contentTypeForJson, this.charset}));
             }
 
             this.fillRequestProperties(connection, requestProperties);
@@ -80,8 +82,8 @@ public class RestClient {
         if (requestProperties != null) {
             Iterator var4 = requestProperties.entrySet().iterator();
 
-            while(var4.hasNext()) {
-                Map.Entry<Object, Object> entry = (Map.Entry)var4.next();
+            while (var4.hasNext()) {
+                Map.Entry<Object, Object> entry = (Map.Entry) var4.next();
                 connection.setRequestProperty(entry.getKey().toString(), entry.getValue().toString());
             }
 
@@ -95,7 +97,7 @@ public class RestClient {
             try {
                 reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-                for(String line = reader.readLine(); line != null; line = reader.readLine()) {
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     sbuf.append(line);
                 }
             } finally {
@@ -125,12 +127,11 @@ public class RestClient {
             }
 
         }
-
     }
 
     public String pesudoRequest(String method, String uri, String data, Properties requestProperties) throws IOException {
-        Validate.notEmpty(method, "method is empty!");
-        Validate.notEmpty(uri, "uri is empty!");
+        Objects.requireNonNull(method, "method is empty!");
+        Objects.requireNonNull(uri, "uri is empty!");
         method = this.validateMethod(method);
         if (method == REQUEST_METHOD_PUT) {
             method = REQUEST_METHOD_POST;
@@ -168,8 +169,8 @@ public class RestClient {
     }
 
     public static String addMethodToUri(String uri, String method) {
-        Validate.notEmpty(uri, "uri is empty!");
-        Validate.notEmpty(method, "method is empty!");
+        Objects.requireNonNull(uri, "uri is empty!");
+        Objects.requireNonNull(method, "method is empty!");
         int index = uri.indexOf(METHOD_PARAM);
         if (index != -1) {
             return uri;
@@ -191,18 +192,18 @@ public class RestClient {
     }
 
     public static String removeMethodFromUri(String uri) {
-        Validate.notEmpty(uri, "uri is empty!");
+        Objects.requireNonNull(uri, "uri is empty!");
         int index = uri.indexOf(METHOD_PARAM);
         return index == -1 ? uri : uri.substring(0, index - 1);
     }
 
     public String getContentType() {
-        return this.contentTypeForXml;
+        return this.contentTypeForJson;
     }
 
     public void setContentType(String contentType) {
         if (contentType != null && !contentType.isEmpty()) {
-            this.contentTypeForXml = contentType;
+            this.contentTypeForJson = contentType;
         }
     }
 
@@ -213,4 +214,5 @@ public class RestClient {
     public void setCharset(String charset) {
         this.charset = charset;
     }
+
 }
