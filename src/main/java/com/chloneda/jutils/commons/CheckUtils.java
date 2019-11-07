@@ -134,6 +134,14 @@ public class CheckUtils {
         return obj;
     }
 
+    public static <T> void requireNotNull(T... objs) {
+        for (T obj : objs) {
+            if (isNull(obj)) {
+                throw new NullPointerException("Optional parameter " + obj + " may not be null");
+            }
+        }
+    }
+
     public static <T> T requireNotNull(T obj, String message) {
         if (obj == null) {
             throw new NullPointerException(message);
