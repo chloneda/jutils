@@ -216,8 +216,8 @@ public class JsonUtils {
      * @param type {@link Type}
      * @return 返回List
      */
-    public static <T> List<T> toList(String json, final Type type) {
-        List<T> result = null;
+    public static <T> T toList(String json, final Type type) {
+        T result = null;
         try {
             switch (classType) {
                 case JACKSON_CLASS_TYPE:

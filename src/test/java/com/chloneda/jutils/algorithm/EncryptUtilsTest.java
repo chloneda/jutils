@@ -18,7 +18,6 @@ public class EncryptUtilsTest {
     public void testDecryptBASE64() {
         String encStr = EncryptUtils.encryptBASE64("admin");
         System.out.println("BASE64加密后字符串{}: " + encStr);
-
         String decStr = EncryptUtils.decryptBASE64(encStr);
         System.out.println("BASE64解密后字符串{}: " + decStr);
 
