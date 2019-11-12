@@ -1,6 +1,7 @@
 package com.chloneda.jutils.algorithm;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +22,11 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class EncryptUtils {
 
+    /**
+     * {@link StandardCharsets}
+     */
     public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+
     public static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private EncryptUtils() {
