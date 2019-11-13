@@ -254,4 +254,21 @@ public class Chloneda {
         public static final Pattern REGEX_IPV6 = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
     }
 
+    public static final class ResourcePath{
+
+        public static final String BASE_PATH = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+
+        /**
+         * RESOURCE_PATH和 BASE_PATH 获取路径一样.
+         * 如: /opt/tomcat/webapps/jutil/WEB-INF/class/
+         */
+        public static final String RESOURCE_PATH = ResourcePath.class.getClass().getResource("/").getPath();
+
+        /**
+         * Tomcat静态资源存放根路径，如：/opt/tomcat/webapps/jutil
+         */
+        public static final String ROOT_PATH = ResourcePath.class.getClass().getResource("/").getPath() + "../../";
+
+    }
+
 }
