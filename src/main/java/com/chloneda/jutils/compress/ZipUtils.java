@@ -8,7 +8,7 @@ import java.util.zip.*;
  * @Created by chloneda
  * @Description:
  */
-public class ZipUtil {
+public class ZipUtils {
     private static final int BUFFER = 8192;
     private static final String ZIP_FILE_EXTENSION = ".zip";
 
@@ -35,20 +35,8 @@ public class ZipUtil {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
-            if(null != zipOut){
-                try {
-                    zipOut.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(null != out){
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            close(zipOut);
+            close(out);
         }
     }
 
@@ -98,13 +86,7 @@ public class ZipUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(null != bis){
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            close(bis);
         }
     }
 
@@ -150,20 +132,17 @@ public class ZipUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(null != in){
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            close(in);
+            close(out);
+        }
+    }
 
-            if(null != out){
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    public static void close(AutoCloseable closeable){
+        if(closeable!=null){
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

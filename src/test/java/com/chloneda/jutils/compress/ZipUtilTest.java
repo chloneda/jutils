@@ -17,7 +17,7 @@ public class ZipUtilTest {
         String srcDirPath = "D:/opt/share/zipFolder";
         String dstZipFilePath = "D:/opt/share/new.zip";
 
-        ZipUtil.compress(srcDirPath, dstZipFilePath);
+        ZipUtils.compress(srcDirPath, dstZipFilePath);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class ZipUtilTest {
         Objects.requireNonNull(targetDirPath);
         Objects.requireNonNull(zipFilePath);
 
-        ZipUtil.decompress(zipFilePath, targetDirPath);
+        ZipUtils.decompress(zipFilePath, targetDirPath);
     }
 
 }
