@@ -1,7 +1,6 @@
 package com.chloneda.jutils.commons;
 
-import org.apache.commons.codec.binary.Base64;
-
+import java.util.Base64;
 import java.util.UUID;
 
 /**
@@ -9,7 +8,9 @@ import java.util.UUID;
  * @description:
  */
 public abstract class UUIDUtils {
-    public UUIDUtils() {
+
+    private UUIDUtils() {
+        throw new UnsupportedOperationException("You can't instantiate me...");
     }
 
     public static String UUID() {
@@ -34,7 +35,7 @@ public abstract class UUIDUtils {
         long most = uuid.getMostSignificantBits();
         long2bytes(most, byUUID, 0);
         long2bytes(least, byUUID, 8);
-        String compressUUID = Base64.encodeBase64URLSafeString(byUUID);
+        String compressUUID = new String(Base64.getEncoder().encode(byUUID));
         return compressUUID;
     }
 
@@ -54,7 +55,7 @@ public abstract class UUIDUtils {
         if (compressedUUID.length() != 22) {
             throw new IllegalArgumentException("Invalid uuid!");
         } else {
-            byte[] byUUID = Base64.decodeBase64(compressedUUID + "==");
+            byte[] byUUID = Base64.getDecoder().decode(compressedUUID + "==");
             long most = bytes2long(byUUID, 0);
             long least = bytes2long(byUUID, 8);
             UUID uuid = new UUID(most, least);

@@ -7,9 +7,9 @@ import java.util.regex.Pattern;
  * @Created by chloneda
  * @Description: 常量相关工具类，可以继承扩展
  */
-public class Chloneda {
+public class Constants {
 
-    private Chloneda() {
+    private Constants() {
         throw new UnsupportedOperationException("You can't instantiate me...");
     }
 
