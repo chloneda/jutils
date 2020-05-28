@@ -1,5 +1,6 @@
 package com.chloneda.jutils.rest;
 
+import com.chloneda.jutils.commons.StringFormatter;
 import com.chloneda.jutils.commons.StringUtils;
 
 import java.io.*;
@@ -47,7 +48,7 @@ public class RestClient {
             connection.setRequestProperty("accept", this.contentTypeForJson);
             if (data != null && !data.isEmpty()) {
                 connection.setRequestProperty("Content-Type",
-                        StringUtils.format("{}; charset={}", new Object[]{this.contentTypeForJson, this.charset}));
+                        StringFormatter.format("{}; charset={}", new Object[]{this.contentTypeForJson, this.charset}));
             }
 
             this.fillRequestProperties(connection, requestProperties);
@@ -74,7 +75,7 @@ public class RestClient {
         } else if (method.equalsIgnoreCase(REQUEST_METHOD_DELETE)) {
             return REQUEST_METHOD_DELETE;
         } else {
-            throw new IllegalArgumentException(StringUtils.format("Unsupport request method '{}'!", new Object[]{method}));
+            throw new IllegalArgumentException(StringFormatter.format("Unsupport request method '{}'!", new Object[]{method}));
         }
     }
 
@@ -107,7 +108,7 @@ public class RestClient {
 
             }
         } else {
-            sbuf.append(StringUtils.format("http status code : {}\n", new Object[]{connection.getResponseCode()}));
+            sbuf.append(StringFormatter.format("http status code : {}\n", new Object[]{connection.getResponseCode()}));
             sbuf.append(connection.getResponseMessage());
         }
 

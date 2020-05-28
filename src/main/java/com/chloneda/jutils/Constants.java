@@ -96,92 +96,36 @@ public class Constants {
     }
 
     /**
-     * 标准字符集编码
-     */
-    public static final class StandardCharsets {
-
-        private StandardCharsets() {
-            throw new AssertionError("No StandardCharsets instances for you!");
-        }
-
-        /**
-         * Seven-bit ASCII, a.k.a. ISO646-US, a.k.a. the Basic Latin block of the
-         * Unicode character set
-         */
-        public static final Charset US_ASCII = Charset.forName("US-ASCII");
-
-        /**
-         * ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1
-         */
-        public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
-
-        /**
-         * Eight-bit UCS Transformation Format
-         */
-        public static final Charset UTF_8 = Charset.forName("UTF-8");
-
-        /**
-         * Sixteen-bit UCS Transformation Format, big-endian byte order
-         */
-        public static final Charset UTF_16BE = Charset.forName("UTF-16BE");
-
-        /**
-         * Sixteen-bit UCS Transformation Format, little-endian byte order
-         */
-        public static final Charset UTF_16LE = Charset.forName("UTF-16LE");
-
-        /**
-         * Sixteen-bit UCS Transformation Format, byte order identified by an
-         * optional byte-order mark
-         */
-        public static final Charset UTF_16 = Charset.forName("UTF-16");
-
-    }
-
-
-    /**
      * 字符集编码
      */
-    public static class CharSet {
-        /**
-         * 7位ASCII字符，也叫作ISO646-US、Unicode字符集的基本拉丁块
-         */
-        public static final String US_ASCII = "US-ASCII";
+    public static final class Charsets {
 
-        /**
-         * ISO 拉丁字母表
-         */
-        public static final String ISO_8859_1 = "ISO-8859-1";
+        private Charsets() {
+            throw new AssertionError("No Charsets instances for you!");
+        }
 
-        /**
-         * 8 位 UCS 转换格式
-         */
-        public static final String UTF_8 = "UTF-8";
+        public static final Charset US_ASCII = Charset.forName("US-ASCII");
 
-        /**
-         * 16 位 UCS 转换格式，Big Endian（最低地址存放高位字节）字节顺序
-         */
-        public static final String UTF_16BE = "UTF-16BE";
+        public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
-        /**
-         * 16 位 UCS 转换格式，Little-endian（最高地址存放低位字节）字节顺序
-         */
-        public static final String UTF_16LE = "UTF-16LE";
+        public static final Charset UTF_8 = Charset.forName("UTF-8");
 
-        /**
-         * 16 位 UCS 转换格式，字节顺序由可选的字节顺序标记来标识
-         */
-        public static final String UTF_16 = "UTF-16";
+        public static final Charset UTF_16BE = Charset.forName("UTF-16BE");
+
+        public static final Charset UTF_16LE = Charset.forName("UTF-16LE");
+
+        public static final Charset UTF_16 = Charset.forName("UTF-16");
 
         /**
          * 中文超大字符集
          */
-        public static final String GBK = "GBK";
+        public static final Charset GBK = Charset.forName("GBK");
 
         /**
          * 最常见的中文字符集
          */
-        public static final String GB2312 = "GB2312";
+        public static final Charset GB2312 = Charset.forName("GB2312");
+
     }
 
     /**

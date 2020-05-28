@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @Created by chloneda
  * @Description: {@link ThreadFactoryBuilder}
- * {@link Executors}. Executors.defaultThreadFactory()
+ * {@link Executors#defaultThreadFactory()}
  */
 public final class DefaultThreadFactory implements ThreadFactory {
 

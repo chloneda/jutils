@@ -58,21 +58,21 @@ import java.util.*;
  * @Created by chloneda
  * @Description:
  */
-public class ElasticsearchUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchUtils.class);
+public class ElasticsearchTransportClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchTransportClient.class);
 
     private static TransportClient client;
     private EsConfig esConfig;
 
-    public ElasticsearchUtils(String host, int port) {
+    public ElasticsearchTransportClient(String host, int port) {
         initClient(host, port);
     }
 
-    public ElasticsearchUtils(TransportClient client) {
+    public ElasticsearchTransportClient(TransportClient client) {
         initClient(client);
     }
 
-    public ElasticsearchUtils(EsConfig esConfig) {
+    public ElasticsearchTransportClient(EsConfig esConfig) {
         this.esConfig = esConfig;
         initClient(esConfig);
     }
@@ -549,9 +549,9 @@ public class ElasticsearchUtils {
         esConfig.setPort(9300);
         esConfig.setSniff(false);
         esConfig.setClusterName("elastic");
-        ElasticsearchUtils.initClient(esConfig);
+        ElasticsearchTransportClient.initClient(esConfig);
         //TransportClient client = elasticSearchUtils.getClient();
-        Set set = ElasticsearchUtils.getAllIndexes();
+        Set set = ElasticsearchTransportClient.getAllIndexes();
 
         System.out.println(set);
 //        JSONObject jsonObject = initJson();
