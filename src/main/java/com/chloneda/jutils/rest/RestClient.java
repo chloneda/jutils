@@ -1,7 +1,6 @@
 package com.chloneda.jutils.rest;
 
 import com.chloneda.jutils.commons.StringFormatter;
-import com.chloneda.jutils.commons.StringUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;

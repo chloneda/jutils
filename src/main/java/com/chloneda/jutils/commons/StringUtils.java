@@ -9,10 +9,6 @@ public class StringUtils {
     public StringUtils() {
     }
 
-    public static String replaceEach(String text, String[] searchList, String[] replaceList) {
-        return org.apache.commons.lang3.StringUtils.replaceEach(text, searchList, replaceList);
-    }
-
     public static String replace(String text, String[] replaceList) {
         return String.format(text, replaceList);
     }

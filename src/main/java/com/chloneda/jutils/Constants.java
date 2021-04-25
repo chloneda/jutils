@@ -1,6 +1,8 @@
 package com.chloneda.jutils;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -198,12 +200,12 @@ public class Constants {
         public static final Pattern REGEX_IPV6 = Pattern.compile("^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$");
     }
 
-    public static final class ResourcePath{
+    public static final class ResourcePath {
 
         public static final String BASE_PATH = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
         /**
-         * RESOURCE_PATH和 BASE_PATH 获取路径一样.
+         * RESOURCE_PATH和 BASE_PATH 获取路径一样.tomcat重写了类加载器
          * 如: /opt/tomcat/webapps/jutil/WEB-INF/class/
          */
         public static final String RESOURCE_PATH = ResourcePath.class.getClass().getResource("/").getPath();
@@ -214,5 +216,28 @@ public class Constants {
         public static final String ROOT_PATH = ResourcePath.class.getClass().getResource("/").getPath() + "../../";
 
     }
+
+    public enum HttpMethod {
+
+        GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
+
+        private static final Map<String, HttpMethod> mappings = new HashMap<>(16);
+
+        static {
+            for (HttpMethod httpMethod : values()) {
+                mappings.put(httpMethod.name(), httpMethod);
+            }
+        }
+
+        public static HttpMethod resolve(String method) {
+            return (method != null ? mappings.get(method) : null);
+        }
+
+        public boolean matches(String method) {
+            return (this == resolve(method));
+        }
+
+    }
+
 
 }
